@@ -34,7 +34,14 @@ html::-webkit-scrollbar-thumb {
     font-family: "ABCAreal";
     font-style: medium;
     font-weight: 500;
-    src: url("../Assets/Fonts/ABCAreal-medium.ttf") format("truetype");
+    src: url("../Assets/Fonts/ABCAreal-Medium.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "ABCAreal";
+    font-style: bold;
+    font-weight: 700;
+    src: url("../Assets/Fonts/ABCAreal-Bold.ttf") format("truetype");
 }
 
 .main {
@@ -178,7 +185,7 @@ html::-webkit-scrollbar-thumb {
     color: grey;
 }
 
-.section2 {
+.section3 {
     width: 100%;
     height: 100vh;
     position: relative;
@@ -193,30 +200,43 @@ html::-webkit-scrollbar-thumb {
     background-position: center calc(50% + 50px);
 }
 
-.section2-heading {
+.section2-heading,
+.carousel-heading,
+.section4-heading {
     z-index: 1;
     box-sizing: border-box;
     width: calc(100% - 10rem);
     margin-left: 6rem;
     text-align: left;
+}
+
+.section2-heading {
     transform: translateY(var(--section2-heading-offset, 0px));
 }
 
-.section2-heading h2 {
+.section4-heading {
+    transform: translateY(var(--section4-heading-offset, 0px));
+}
+
+.section2-heading h2,
+.carousel-heading h2,
+.section4-heading h2 {
     margin: 0;
     font-size: clamp(2rem, 4vw, 3.75rem);
     font-style: medium;
     line-height: 1.1;
 }
 
-.section2-heading p {
+.section2-heading p,
+.carousel-heading p,
+.section4-heading p {
     margin: .6rem 0 0;
     color: grey;
     font-size: clamp(.9rem, 1.3vw, 1.1rem);
     font-style: medium;
 }
 
-.section2::after {
+.section3::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -228,7 +248,7 @@ html::-webkit-scrollbar-thumb {
     pointer-events: none;
 }
 
-.section3 {
+.section2 {
     width: 100%;
     height: 100vh;
     box-sizing: border-box;
@@ -240,28 +260,6 @@ html::-webkit-scrollbar-thumb {
     background-color: white;
     color: black;
     overflow: hidden;
-}
-
-.carousel-heading {
-    z-index: 1;
-    box-sizing: border-box;
-    width: calc(100% - 10rem);
-    margin-left: 6rem;
-    text-align: left;
-}
-
-.carousel-heading h2 {
-    margin: 0;
-    font-size: clamp(2rem, 4vw, 3.75rem);
-    font-style: medium;
-    line-height: 1.1;
-}
-
-.carousel-heading p {
-    margin: .6rem 0 0;
-    color: grey;
-    font-size: clamp(.9rem, 1.3vw, 1.1rem);
-    font-style: medium;
 }
 
 .carousel {
@@ -420,7 +418,12 @@ html::-webkit-scrollbar-thumb {
 .section4 {
     width: 100%;
     height: 100vh;
-    background-color: grey;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, rgb(230, 230, 230) 0%, white 100%);
 }
 
 

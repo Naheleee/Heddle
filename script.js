@@ -80,21 +80,29 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const loomSection = document.querySelector(".section2");
+    const section1 = document.querySelector(".section1");
+    const scrollCueImage = document.querySelector(".section-scroll-cue img");
+    const loomSection = document.querySelector(".section3");
+    const nextSection = document.querySelector(".section2");
     const section2Heading = document.querySelector(".section2-heading");
-    const section3 = document.querySelector(".section3");
+    const carouselSection = document.querySelector(".section2");
     const carouselHeading = document.querySelector(".carousel-heading");
-    const alignSection2Heading = () => {
+    const section4Heading = document.querySelector(".section4-heading");
+    const alignSectionHeadings = () => {
         const carouselHeadingTop =
-            carouselHeading.getBoundingClientRect().top - section3.getBoundingClientRect().top;
+            carouselHeading.getBoundingClientRect().top - carouselSection.getBoundingClientRect().top;
         section2Heading.style.setProperty(
             "--section2-heading-offset",
             `${carouselHeadingTop - section2Heading.offsetTop}px`
         );
+        section4Heading.style.setProperty(
+            "--section4-heading-offset",
+            `${carouselHeadingTop - section4Heading.offsetTop}px`
+        );
     };
 
-    alignSection2Heading();
-    window.addEventListener("resize", alignSection2Heading);
+    alignSectionHeadings();
+    window.addEventListener("resize", alignSectionHeadings);
 
     let loomOverlayFrame = 0;
     const updateLoomOverlay = () => {
@@ -104,6 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         loomOverlayFrame = requestAnimationFrame(() => {
             loomOverlayFrame = 0;
+            const section1Progress = Math.min(
+                1,
+                Math.max(0, (section1.offsetHeight - section1.getBoundingClientRect().bottom) / (section1.offsetHeight / 2))
+            );
+            scrollCueImage.style.opacity = 1 - section1Progress;
+
             const sectionHeight = loomSection.offsetHeight;
             const scrolledIntoSection =
                 window.innerHeight - loomSection.getBoundingClientRect().top;
@@ -174,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelector(".section-scroll-cue").addEventListener("click", (event) => {
         event.preventDefault();
-        targetScrollY = window.scrollY + loomSection.getBoundingClientRect().top;
+        targetScrollY = window.scrollY + nextSection.getBoundingClientRect().top;
 
         if (reducedMotion.matches) {
             if (smoothScrollFrame) {
