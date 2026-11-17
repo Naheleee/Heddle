@@ -41,13 +41,22 @@ document.addEventListener("DOMContentLoaded", () => {
     let patternTimer;
 
     generatePattern();
-    webAppButton.addEventListener("pointerenter", () => {
+    const hoverInput = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const startPatternAnimation = () => {
         generatePattern();
         patternTimer = setInterval(generatePattern, 200);
-    });
-    webAppButton.addEventListener("pointerleave", () => {
+    };
+    const stopPatternAnimation = () => {
         clearInterval(patternTimer);
-    });
+    };
+
+    if (hoverInput.matches) {
+        webAppButton.addEventListener("pointerenter", startPatternAnimation);
+        webAppButton.addEventListener("pointerleave", stopPatternAnimation);
+    } else {
+        startPatternAnimation();
+    }
+
     webAppButton.addEventListener("click", (event) => {
         if (
             event.button !== 0 ||

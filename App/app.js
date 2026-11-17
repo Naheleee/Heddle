@@ -1071,6 +1071,7 @@
 
   function renderDefaultPatterns() {
     const root = $('defaultPatterns');
+    const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
     root.replaceChildren();
     DEFAULT_PATTERN_CATEGORIES.forEach(category => {
       const section = document.createElement('details'),
@@ -1089,7 +1090,7 @@
           preview = document.createElement('canvas');
         button.type = 'button';
         button.className = 'default-pattern';
-        button.draggable = true;
+        button.draggable = !coarsePointer;
         button.title = pattern.name;
         button.setAttribute('aria-label', pattern.name);
         preview.className = 'default-pattern-preview';
@@ -1104,9 +1105,11 @@
           event.dataTransfer.setData('application/x-loom-pattern', pattern.id);
         });
         button.addEventListener('pointerdown', event => {
-          if (event.pointerType !== 'touch') return;
+          if (event.pointerType !== 'touch' && !coarsePointer) return;
           event.preventDefault();
-          button.setPointerCapture(event.pointerId);
+          const pointerId = event.pointerId,
+            wasDraggable = button.draggable;
+          button.draggable = false;
           const ghost = document.createElement('img');
           ghost.className = 'touch-pattern-drag';
           ghost.src = preview.toDataURL();
@@ -1114,10 +1117,12 @@
           ghost.setAttribute('aria-hidden', 'true');
           document.body.append(ghost);
           const moveGhost = pointerEvent => {
+            if (pointerEvent.pointerId !== pointerId) return;
             ghost.style.left = `${pointerEvent.clientX}px`;
             ghost.style.top = `${pointerEvent.clientY}px`;
           };
           const endDrag = pointerEvent => {
+            if (pointerEvent.pointerId !== pointerId) return;
             moveGhost(pointerEvent);
             const canvasRect = canvas.getBoundingClientRect();
             if (pointerEvent.type === 'pointerup' &&
@@ -1127,14 +1132,15 @@
               placeDefaultPattern(pattern, pointerEvent);
             }
             ghost.remove();
-            button.removeEventListener('pointermove', moveGhost);
-            button.removeEventListener('pointerup', endDrag);
-            button.removeEventListener('pointercancel', endDrag);
+            button.draggable = wasDraggable;
+            document.removeEventListener('pointermove', moveGhost);
+            document.removeEventListener('pointerup', endDrag);
+            document.removeEventListener('pointercancel', endDrag);
           };
           moveGhost(event);
-          button.addEventListener('pointermove', moveGhost);
-          button.addEventListener('pointerup', endDrag);
-          button.addEventListener('pointercancel', endDrag);
+          document.addEventListener('pointermove', moveGhost);
+          document.addEventListener('pointerup', endDrag);
+          document.addEventListener('pointercancel', endDrag);
         });
         grid.append(button);
       });
