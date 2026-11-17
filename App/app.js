@@ -1414,9 +1414,14 @@
   }
 
   function javascript(pattern = state, patternName) {
+    const warp = pattern.w,
+      weft = pattern.h;
     const exportPattern = {
-      width: pattern.w,
-      height: pattern.h,
+      warp,
+      weft,
+      threadWidth: Number(((pattern.stretch ?? 1) * 10).toFixed(1)),
+      width: warp,
+      height: weft,
       cells: pattern.cells,
       grid: pattern.grid ?? state.grid
     };
@@ -1429,16 +1434,27 @@
     if (!match) throw new Error('The file is not a supported JavaScript project.');
 
     const project = JSON.parse(match[1]);
-    if (!project || !Number.isInteger(project.width) || project.width < 4 || project.width > 64 ||
-        !Number.isInteger(project.height) || project.height < 4 || project.height > 64 ||
+    const warp = project?.warp ?? project?.width,
+      weft = project?.weft ?? project?.height;
+    if (!project || !Number.isInteger(warp) || warp < 4 || warp > 64 ||
+        !Number.isInteger(weft) || weft < 4 || weft > 200 ||
+        (project.threadWidth !== undefined &&
+          (typeof project.threadWidth !== 'number' || !Number.isFinite(project.threadWidth) ||
+            project.threadWidth < 1 || project.threadWidth > 10)) ||
         typeof project.grid !== 'boolean' || !Array.isArray(project.cells) ||
-        project.cells.length !== project.height ||
-        project.cells.some(row => !Array.isArray(row) || row.length !== project.width ||
+        project.cells.length !== weft ||
+        project.cells.some(row => !Array.isArray(row) || row.length !== warp ||
           row.some(cell => cell !== null && (typeof cell !== 'string' || !/^#[0-9a-f]{6}$/i.test(cell))))) {
       throw new Error('The JavaScript project contains invalid pattern data.');
     }
 
-    return { w: project.width, h: project.height, cells: project.cells, grid: project.grid };
+    return {
+      w: warp,
+      h: weft,
+      stretch: project.threadWidth === undefined ? undefined : project.threadWidth / 10,
+      cells: project.cells,
+      grid: project.grid
+    };
   }
 
   function renderPatterns() {
