@@ -1,0 +1,420 @@
+@font-face {
+  font-family: "ABCAreal";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../Assets/Fonts/ABCAreal-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "ABCAreal";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../Assets/Fonts/ABCAreal-Bold.ttf") format("truetype");
+}
+
+:root {
+  color-scheme: light;
+  font-family: "ABCAreal", Arial, sans-serif;
+  color: #242522;
+  background: #f1f0ec;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: #f1f0ec;
+}
+
+a {
+  color: inherit;
+}
+
+.site-header {
+  display: flex;
+  min-height: 84px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px clamp(22px, 6vw, 88px);
+  border-bottom: 1px solid #d8d7d1;
+}
+
+.brand img {
+  display: block;
+  width: 118px;
+  height: auto;
+}
+
+.designer-link,
+.start-link,
+.inline-link,
+.finish-link {
+  font-size: .92rem;
+  text-decoration: none;
+}
+
+.designer-link:hover,
+.inline-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.intro {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(72px, 12vw, 150px) 28px clamp(72px, 10vw, 120px);
+}
+
+.eyebrow,
+.chapter-number,
+.sidebar-title {
+  margin: 0;
+  color: #77786f;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 22px;
+  font-size: clamp(3.2rem, 8vw, 7.5rem);
+  font-weight: 400;
+  letter-spacing: -.075em;
+  line-height: .96;
+}
+
+h1 span {
+  color: #8d7964;
+}
+
+.intro-copy {
+  max-width: 450px;
+  margin-bottom: 28px;
+  color: #66675f;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.start-link,
+.finish-link {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 20px;
+  padding: 0 18px;
+  border: 1px solid #242522;
+  border-radius: 2px;
+}
+
+.start-link:hover,
+.finish-link:hover {
+  color: #f1f0ec;
+  background: #242522;
+}
+
+.guide-layout {
+  display: grid;
+  max-width: 1120px;
+  grid-template-columns: minmax(200px, 270px) minmax(0, 1fr);
+  gap: clamp(44px, 9vw, 120px);
+  margin: 0 auto;
+  padding: 0 28px 120px;
+}
+
+.guide-sidebar {
+  position: sticky;
+  top: 28px;
+  align-self: start;
+  padding-top: 8px;
+}
+
+.sidebar-title {
+  margin-bottom: 20px;
+}
+
+.chapter-nav {
+  display: grid;
+  gap: 4px;
+}
+
+.chapter-nav a {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 13px;
+  padding: 8px 10px;
+  color: #6a6b63;
+  font-size: .9rem;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+
+.chapter-nav a span {
+  color: #9b9b92;
+  font-size: .72rem;
+}
+
+.chapter-nav a[aria-current="step"] {
+  color: #242522;
+  border-left-color: #8d7964;
+  background: #e8e6e0;
+}
+
+.progress-block {
+  margin-top: 34px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 9px;
+  color: #77786f;
+  font-size: .75rem;
+}
+
+progress {
+  width: 100%;
+  height: 4px;
+  border: 0;
+  background: #d8d7d1;
+}
+
+progress::-webkit-progress-bar {
+  background: #d8d7d1;
+}
+
+progress::-webkit-progress-value {
+  background: #8d7964;
+}
+
+progress::-moz-progress-bar {
+  background: #8d7964;
+}
+
+.chapters {
+  min-width: 0;
+}
+
+.chapter {
+  min-height: 580px;
+  padding: 6px 0 64px;
+  border-bottom: 1px solid #d8d7d1;
+  scroll-margin-top: 32px;
+}
+
+.chapter + .chapter {
+  padding-top: 76px;
+}
+
+.chapter-number {
+  margin-bottom: 17px;
+}
+
+.chapter h2 {
+  margin-bottom: 17px;
+  font-size: clamp(2.1rem, 4vw, 3.4rem);
+  font-weight: 400;
+  letter-spacing: -.055em;
+}
+
+.chapter-lead {
+  max-width: 680px;
+  margin-bottom: 34px;
+  color: #66675f;
+  font-size: 1.08rem;
+  line-height: 1.75;
+}
+
+.chapter > p:not(.chapter-number, .chapter-lead, .completion-message) {
+  max-width: 680px;
+  color: #55564f;
+  line-height: 1.75;
+}
+
+.note-card,
+.tip-card {
+  display: flex;
+  max-width: 720px;
+  gap: 18px;
+  margin: 14px 0;
+  padding: 22px;
+  background: #e8e6e0;
+}
+
+.note-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  color: #f1f0ec;
+  background: #8d7964;
+  border-radius: 50%;
+  font-size: .72rem;
+}
+
+.note-card h3,
+.tip-card h3 {
+  margin: 2px 0 7px;
+  font-size: 1rem;
+}
+
+.note-card p,
+.tip-card p {
+  margin-bottom: 0;
+  color: #66675f;
+  font-size: .92rem;
+  line-height: 1.7;
+}
+
+.tip-card {
+  display: block;
+  margin: 28px 0;
+  border-left: 3px solid #8d7964;
+}
+
+.inline-link {
+  display: inline-block;
+  margin: 8px 0 20px;
+  color: #6f5c48;
+  font-weight: 700;
+}
+
+.instruction-list {
+  display: grid;
+  max-width: 720px;
+  gap: 0;
+  margin: 0 0 30px;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid #d8d7d1;
+}
+
+.instruction-list li {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  padding: 18px 0;
+  border-bottom: 1px solid #d8d7d1;
+}
+
+.instruction-list li > span {
+  color: #8d7964;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.instruction-list p {
+  margin: 0;
+  color: #55564f;
+  line-height: 1.7;
+}
+
+.completion-message {
+  margin: 32px 0;
+  font-size: 1.15rem;
+}
+
+.chapter-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 38px;
+}
+
+.chapter-controls a {
+  color: #66675f;
+  font-size: .88rem;
+  text-decoration: none;
+}
+
+.chapter-controls a:hover {
+  color: #242522;
+}
+
+.chapter-controls .finish-link {
+  color: #242522;
+}
+
+.chapter-controls .finish-link:hover {
+  color: #f1f0ec;
+}
+
+a:focus-visible {
+  outline: 2px solid #8d7964;
+  outline-offset: 4px;
+}
+
+@media (max-width: 700px) {
+  .site-header {
+    min-height: 70px;
+    padding: 14px 20px;
+  }
+
+  .brand img {
+    width: 98px;
+  }
+
+  .designer-link {
+    font-size: .82rem;
+  }
+
+  .intro {
+    padding: 76px 22px 70px;
+  }
+
+  .guide-layout {
+    display: block;
+    padding: 0 22px 72px;
+  }
+
+  .guide-sidebar {
+    position: static;
+    margin-bottom: 46px;
+  }
+
+  .chapter-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chapter-nav a {
+    gap: 8px;
+    padding: 8px 5px;
+    font-size: .78rem;
+  }
+
+  .chapter {
+    min-height: 0;
+    padding-bottom: 48px;
+  }
+
+  .chapter + .chapter {
+    padding-top: 54px;
+  }
+
+  .note-card,
+  .tip-card {
+    padding: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+}

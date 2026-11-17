@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#dedede">
+  <title>Web App</title>
+  <link rel="icon" type="image/png" href="../Assets/Logo/Favicon.png">
+  <link rel="stylesheet" href="app.css">
+  <script>
+    if (sessionStorage.getItem("page-transition") === "in") {
+      document.documentElement.classList.add("is-entering");
+      sessionStorage.removeItem("page-transition");
+    }
+  </script>
+</head>
+
+<body>
+  <div class="page-transition" aria-hidden="true"></div>
+  <div class="orientation-prompt" role="status" aria-live="polite">
+    <div class="orientation-prompt__icon" aria-hidden="true"><span></span></div>
+    <h1>Rotate your device</h1>
+    <p>Heddle works best in landscape.<br>Turn your device sideways to continue.</p>
+  </div>
+  <div class="app-shell">
+    <header class="toolbar">
+      <a href="../index.html">
+        <img class="toolbar-logo" src="../Assets/Logo/Logo_1.png" alt="LoomSketch">
+      </a>
+      <span class="toolbar-spacer"></span>
+      <div class="toolbar-tools">
+        <button type="button" id="gridSettingsButton" class="toolbar-button toolbar-grid-button"
+          aria-label="Loom dimensions" title="Loom dimensions" aria-haspopup="dialog" aria-controls="gridSettingsDialog"
+          aria-expanded="false"><img class="toolbar-grid-button__grid" src="../Assets/Icons/Grid.svg" alt=""
+            aria-hidden="true"></button>
+        <div class="zoom-control"><button id="zoomOut" aria-label="Zoom out"><img class="ui-icon"
+              src="../Assets/Icons/Zoom_out.svg" alt="" aria-hidden="true"></button><label class="zoom-value"><input
+              id="zoomInput" type="number" min="50" max="400" value="100" aria-label="Zoom percentage"><span
+              aria-hidden="true">%</span></label><button id="zoomIn" aria-label="Zoom in"><img class="ui-icon"
+              src="../Assets/Icons/Zoom_in.svg" alt="" aria-hidden="true"></button></div>
+        <span class="divider zoom-divider"></span>
+        <div class="tool-group" role="group" aria-label="Tools">
+          <button class="tool-button active" data-tool="draw" title="Draw (D)"><img class="ui-icon"
+              src="../Assets/Icons/Pencil.svg" alt="" aria-hidden="true"><span>&nbsp;Draw</span></button>
+          <button class="tool-button" data-tool="erase" title="Erase (E)"><img class="ui-icon"
+              src="../Assets/Icons/Erase.svg" alt="" aria-hidden="true"><span>Erase</span></button>
+          <button class="tool-button" data-tool="fill" title="Fill (F)"><img class="ui-icon"
+              src="../Assets/Icons/Fill.svg" alt="" aria-hidden="true"><span>&nbsp;Fill</span></button>
+          <button class="tool-button" data-tool="select" title="Select (S)"><img class="ui-icon"
+              src="../Assets/Icons/Selection.svg" alt="" aria-hidden="true"><span>&nbsp;Select</span></button>
+        </div>
+        <span class="divider"></span>
+        <div class="history-controls"><button id="undoBtn" aria-label="Undo" title="Undo" disabled><img class="ui-icon"
+              src="../Assets/Icons/Undo.svg" alt="" aria-hidden="true"></button><button id="redoBtn" aria-label="Redo"
+            title="Redo" disabled><img class="ui-icon" src="../Assets/Icons/Redo.svg" alt=""
+              aria-hidden="true"></button>
+        </div>
+      </div>
+      <span class="toolbar-spacer"></span>
+      <div class="pattern-info"><i></i><span id="statusText">Untitled project</span></div>
+      <button id="saveVersion" class="primary-button" aria-label="Save version" title="Save version (Ctrl+S)"><img
+          class="ui-icon" src="../Assets/Icons/Save.svg" alt="" aria-hidden="true"><span>&nbsp;Save</span></button>
+      <button id="myPatterns" class="toolbar-button" aria-label="My patterns"><img class="ui-icon"
+          src="../Assets/Icons/Folder.svg" alt="" aria-hidden="true"><span>&nbsp;My patterns</span></button>
+      <button id="export-button" class="toolbar-button" aria-label="Export pattern" title="Export pattern"
+        aria-haspopup="dialog" aria-controls="exportDialog"><img class="ui-icon" src="../Assets/Icons/Download.svg"
+          alt="" aria-hidden="true"><span>Export</span></button>
+      <button id="clearBtn" class="toolbar-button clear-button">Clear</button>
+    </header>
+    <main class="main-layout">
+      <section class="studio">
+        <div id="canvasViewport" class="canvas-viewport">
+          <canvas id="patternCanvas" aria-label="Editable pattern canvas"></canvas>
+          <div id="selectionOverlay" class="selection-overlay" hidden>
+            <div class="selection-bounds"></div>
+            <div class="selection-controls" role="group" aria-label="Selection transforms">
+              <button type="button" data-selection-action="up" aria-label="Move selection up"><img
+                  src="../Assets/Icons/Up.svg" alt=""></button>
+              <button type="button" data-selection-action="left" aria-label="Move selection left"><img
+                  src="../Assets/Icons/Left.svg" alt=""></button>
+              <button type="button" data-selection-action="rotate" aria-label="Rotate selection 90 degrees clockwise"
+                title="Rotate 90°"><img src="../Assets/Icons/Rotate.svg" alt=""></button>
+              <button type="button" data-selection-action="right" aria-label="Move selection right"><img
+                  src="../Assets/Icons/Right.svg" alt=""></button>
+              <button type="button" data-selection-action="down" aria-label="Move selection down"><img
+                  src="../Assets/Icons/Down.svg" alt=""></button>
+            </div>
+          </div>
+          <a id="tutorial-button" class="tutorial-button" href="../Tutorial/tutorial.html">Tutorial</a>
+        </div>
+      </section>
+      <aside class="sidebar">
+        <nav class="sidebar-tabs" role="tablist">
+          <button class="sidebar-tab active" data-panel="draw" role="tab" aria-selected="true">Draw</button>
+          <button class="sidebar-tab" data-panel="patterns" role="tab" aria-selected="false">Patterns</button>
+        </nav>
+        <div class="sidebar-scroll">
+          <section id="drawPanel" class="panel-content">
+            <div class="panel-section">
+              <div class="section-heading"><span>Color</span></div>
+              <div class="color-main-row">
+                <label class="color-chip"><input id="colorPicker" type="color" value="#000000"
+                    aria-label="Choose color"></label>
+                <label class="hex-control"><span class="hex-control__label">HEX</span><span class="hex-control__prefix"
+                    aria-hidden="true">#</span><input id="hexInput" value="000000" maxlength="6"
+                    aria-label="Hex color"></label>
+              </div>
+              <div class="rgb-sliders">
+                <label>R<input id="redSlider" type="range" min="0" max="255" value="0"><output>0</output></label>
+                <label>G<input id="greenSlider" type="range" min="0" max="255" value="0"><output>0</output></label>
+                <label>B<input id="blueSlider" type="range" min="0" max="255" value="0"><output>0</output></label>
+              </div>
+              <button id="addCustomLibraryColor" class="small-action custom-library-add" type="button"
+                aria-label="Add active color to custom library" title="Add active color to custom library" hidden><img
+                  class="ui-icon" src="../Assets/Icons/Plus.svg" alt="" aria-hidden="true"><span>Add to
+                  palette</span></button>
+            </div>
+            <div class="panel-section">
+              <div class="section-heading"><span>Recent</span><button id="editRecentColors" class="small-action"
+                  type="button" aria-pressed="false">Edit</button></div>
+              <div id="recentColors" class="recent-swatches"></div>
+            </div>
+            <div class="panel-section">
+              <div class="section-heading"><span>Palettes</span><button id="addCustomSwatch" class="small-action"><img
+                    class="ui-icon" src="../Assets/Icons/Plus.svg" alt="" aria-hidden="true">New</button></div>
+              <div id="swatchTabs" class="swatch-tabs"></div>
+              <div id="swatchGrid" class="swatch-grid"></div>
+            </div>
+            <div class="panel-section">
+              <div class="section-heading"><span>Symmetry</span></div>
+              <div class="option-grid">
+                <button class="option-button selected" data-symmetry="none">None</button>
+                <button class="option-button" data-symmetry="horizontal">Horizontal</button>
+                <button class="option-button" data-symmetry="vertical">Vertical</button>
+                <button class="option-button" data-symmetry="four">4-way</button>
+              </div>
+            </div>
+            <div class="panel-section">
+              <div class="section-heading"><span>Repeat tile</span></div>
+              <label class="range-row"><span>X <b id="repeatXText">1</b></span><input id="repeatX" type="range" min="1"
+                  max="4" value="1"></label>
+              <label class="range-row"><span>Y <b id="repeatYText">1</b></span><input id="repeatY" type="range" min="1"
+                  max="4" value="1"></label>
+            </div>
+            <div class="settings-section">
+              <label class="toggle-row"><span><b>Grid guides</b><small>Show the cell outlines</small></span><input
+                  id="gridToggle" type="checkbox" checked><i></i></label>
+            </div>
+          </section>
+          <section id="patternsPanel" class="panel-content" hidden>
+            <div class="panel-section">
+              <div id="defaultPatterns" class="default-pattern-categories"></div>
+              <p id="patternLibraryFeedback" class="pattern-library-feedback" role="status" aria-live="polite" hidden>
+              </p>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <dialog id="gridSettingsDialog" class="grid-settings-dialog" aria-labelledby="gridSettingsTitle" tabindex="-1">
+    <div class="modal-header">
+      <h2 id="gridSettingsTitle">Loom dimensions</h2>
+      <button type="button" class="close-dialog" data-close aria-label="Close"><img class="ui-icon"
+          src="../Assets/Icons/Close.svg" alt="" aria-hidden="true"></button>
+    </div>
+    <div class="grid-settings-dimensions">
+      <label class="dimension-control grid-dimension-control"><span class="grid-dimension-label">Warp</span><img
+          class="grid-dimension-icon" src="../Assets/Icons/Width_arrow.svg" alt="" aria-hidden="true"><span
+          class="number-stepper">
+          <span class="dimension-value"><input id="widthInput" type="number" min="4" max="64" step="2" value="16"
+              aria-label="Warp"></span><span class="number-stepper-buttons"><button type="button"
+              data-step="up" aria-label="Increase warp"><img src="../Assets/Icons/Right.svg"
+                alt=""></button><button type="button" data-step="down" aria-label="Decrease warp"><img
+                src="../Assets/Icons/Left.svg" alt=""></button></span></span></label>
+      <label class="dimension-control grid-dimension-control"><span class="grid-dimension-label">Weft</span><img
+          class="grid-dimension-icon" src="../Assets/Icons/Height_arrow.svg" alt="" aria-hidden="true"><span
+          class="number-stepper">
+          <span class="dimension-value"><input id="heightInput" type="number" min="4" max="500" value="52"
+              aria-label="Weft"></span><span class="number-stepper-buttons"><button type="button"
+              data-step="up" aria-label="Increase weft"><img src="../Assets/Icons/Right.svg"
+                alt=""></button><button type="button" data-step="down" aria-label="Decrease weft"><img
+                src="../Assets/Icons/Left.svg" alt=""></button></span></span></label>
+      <div class="grid-stretch-control">
+        <span>Thread width</span>
+        <span class="number-stepper">
+          <span class="dimension-value"><input id="stretchInput" type="number" min="1" max="10" step="0.5" value="3"
+              aria-label="Thread width in millimeters"><span class="grid-thread-width-unit" aria-hidden="true">mm</span></span><span class="number-stepper-buttons"><button type="button"
+              data-step="up" aria-label="Increase thread width"><img src="../Assets/Icons/Right.svg"
+                alt=""></button><button type="button" data-step="down" aria-label="Decrease thread width"><img
+                src="../Assets/Icons/Left.svg" alt=""></button></span>
+        </span>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="patternsDialog" class="modal" tabindex="-1">
+    <div class="modal-header">
+      <div class="patterns-modal-title">
+        <h2>My patterns</h2><span id="patternCount" class="pattern-count">0 patterns</span>
+      </div><button class="close-dialog" data-close aria-label="Close"><img class="ui-icon"
+          src="../Assets/Icons/Close.svg" alt="" aria-hidden="true"></button>
+    </div>
+    <div id="patternList" class="pattern-list"></div>
+    <div id="patternsDialogActions" class="patterns-dialog-actions"><button id="openProjectButton"
+        class="open-project-link" type="button">Open project</button></div>
+    <input id="openProjectInput" type="file" accept=".js,.mjs,text/javascript" hidden>
+    <p id="openProjectFeedback" class="open-project-feedback" role="status" aria-live="polite" hidden></p>
+  </dialog>
+  <dialog id="exportDialog" class="modal export-dialog" aria-labelledby="exportDialogTitle" tabindex="-1">
+    <div class="modal-header">
+      <div>
+        <h2 id="exportDialogTitle">Export</h2>
+      </div><button type="button" class="close-dialog" data-close aria-label="Close"><img class="ui-icon"
+          src="../Assets/Icons/Close.svg" alt="" aria-hidden="true"></button>
+    </div>
+    <p class="panel-description">Choose an export format</p>
+    <div class="export-options" role="group" aria-label="Export formats">
+      <button type="button" class="secondary-button export-option" data-export-format="png">
+        <img src="../Assets/Icons/Image_file.svg" alt="" aria-hidden="true">
+        PNG
+      </button>
+      <button type="button" class="secondary-button export-option" data-export-format="pdf">
+        <img src="../Assets/Icons/Document.svg" alt="" aria-hidden="true">
+        PDF
+      </button>
+      <button type="button" class="secondary-button export-option" data-export-format="javascript">
+        <img src="../Assets/Icons/Code_file.svg" alt="" aria-hidden="true">
+        JavaScript
+      </button>
+    </div>
+    <div class="export-settings" role="group" aria-label="Export options">
+      <label class="toggle-row"><span><b>Show numbers</b><small>Include row and column labels</small></span><input
+          id="exportShowNumbers" type="checkbox" checked><i></i></label>
+      <label class="toggle-row"><span><b>Show grid</b><small>Include cell outlines</small></span><input
+          id="exportShowGrid" type="checkbox" checked><i></i></label>
+      <label class="toggle-row"><span><b>Transparent background</b><small>Keep empty cells
+            transparent</small></span><input id="exportTransparentBackground" type="checkbox"><i></i></label>
+    </div>
+    <div class="modal-footer"><button type="button" class="secondary-button" data-close>Cancel</button></div>
+  </dialog>
+  <dialog id="nameDialog" class="modal name-dialog" tabindex="-1">
+    <form id="nameForm">
+      <div class="modal-header">
+        <div>
+          <h2>Save</h2>
+        </div><button type="button" class="close-dialog" data-close aria-label="Close"><img class="ui-icon"
+            src="../Assets/Icons/Close.svg" alt="" aria-hidden="true"></button>
+      </div>
+      <p class="panel-description">Save your current pattern</p><input id="patternNameInput" class="name-input"
+        maxlength="48" required placeholder="My work">
+      <div class="modal-footer"><button type="button" class="secondary-button" data-close>Cancel</button><button
+          type="submit" class="primary-button">Save</button></div>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+  <script>
+    const toolbarLogo = document.querySelector(".toolbar-logo");
+    const updateToolbarLogo = () => {
+      const logoPath = window.innerWidth <= 1366
+        ? "../Assets/Logo/Logo_2.png"
+        : "../Assets/Logo/Logo_1.png";
+
+      if (toolbarLogo.getAttribute("src") !== logoPath) {
+        toolbarLogo.setAttribute("src", logoPath);
+      }
+    };
+
+    updateToolbarLogo();
+    window.addEventListener("resize", updateToolbarLogo);
+
+    const homeLink = document.querySelector('.toolbar a[href="../index.html"]');
+    homeLink.addEventListener("click", (event) => {
+      if (
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      if (document.body.classList.contains("page-leaving")) {
+        return;
+      }
+
+      sessionStorage.setItem("page-transition", "in");
+      document.body.classList.add("page-leaving");
+      window.setTimeout(() => {
+        window.location.assign(homeLink.href);
+      }, 350);
+    });
+
+    if (document.documentElement.classList.contains("is-entering")) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.documentElement.classList.remove("is-entering");
+        });
+      });
+    }
+  </script>
+</body>
+
+</html>
