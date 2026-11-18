@@ -1483,11 +1483,64 @@
       img.alt = `${d.name} preview`;
       let meta = document.createElement('div');
       meta.className = 'pattern-meta';
+      let titleRow = document.createElement('div');
+      titleRow.className = 'pattern-title-row';
       let title = document.createElement('b');
       title.textContent = d.name;
+      let renameButton = document.createElement('button');
+      renameButton.type = 'button';
+      renameButton.className = 'rename-pattern';
+      renameButton.setAttribute('aria-label', `Rename ${d.name}`);
+      renameButton.title = 'Rename project';
+      let renameIcon = document.createElement('img');
+      renameIcon.className = 'ui-icon';
+      renameIcon.src = '../Assets/Icons/Pencil.svg';
+      renameIcon.alt = '';
+      renameIcon.setAttribute('aria-hidden', 'true');
+      renameButton.append(renameIcon);
+      renameButton.onclick = () => {
+        const originalName = d.name;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 48;
+        input.className = 'pattern-name-input';
+        input.value = d.name;
+        input.setAttribute('aria-label', `Rename ${d.name}`);
+        let cancelled = false;
+        input.onkeydown = event => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            input.blur();
+          } else if (event.key === 'Escape') {
+            event.preventDefault();
+            cancelled = true;
+            input.blur();
+          }
+        };
+        input.onblur = () => {
+          if (!cancelled && input.value.trim()) {
+            d.name = input.value.trim();
+            title.textContent = d.name;
+            img.alt = `${d.name} preview`;
+            renameButton.setAttribute('aria-label', `Rename ${d.name}`);
+            renameButton.title = `Rename ${d.name}`;
+            exportButton.setAttribute('aria-label', `Export pattern ${d.name}`);
+            if ($('statusText').textContent === originalName) setStatus(d.name);
+            persist();
+          }
+          input.replaceWith(title);
+          renameButton.hidden = false;
+          if (cancelled) renameButton.focus();
+        };
+        title.replaceWith(input);
+        renameButton.hidden = true;
+        input.focus();
+        input.select();
+      };
+      titleRow.append(title, renameButton);
       let details = document.createElement('span');
       details.textContent = `${d.w} × ${d.h} · ${new Date(d.date).toLocaleDateString()}`;
-      meta.append(title, details);
+      meta.append(titleRow, details);
       let actions = document.createElement('div');
       actions.className = 'pattern-card-actions';
       let exportButton = document.createElement('button');
@@ -1552,17 +1605,33 @@
     $('patternsDialogActions').append(openProject);
   }
 
-  function savePattern(name) {
-    state.patterns.push({
-      id: Date.now() + '-' + Math.random(),
-      name: name.trim() || 'Pattern',
+  function findSavedPatternIndex(name) {
+    const normalizedName = name.trim().toLowerCase();
+    return state.patterns.findIndex(
+      pattern => pattern && typeof pattern.name === 'string' &&
+        pattern.name.trim().toLowerCase() === normalizedName
+    );
+  }
+
+  function savePattern(name, saveCopy = false) {
+    const patternName = name.trim() || 'Pattern';
+    const existingIndex = findSavedPatternIndex(patternName);
+    const replaceIndex = saveCopy ? -1 : existingIndex;
+    const savedPattern = {
+      id: replaceIndex === -1 ? Date.now() + '-' + Math.random() : state.patterns[replaceIndex].id,
+      name: patternName,
       w: state.w,
       h: state.h,
       date: new Date().toISOString(),
       pattern: snapshot(),
       preview: exportCanvas().toDataURL('image/png')
-    });
-    setStatus(name.trim() || 'Pattern');
+    };
+    if (replaceIndex === -1) {
+      state.patterns.push(savedPattern);
+    } else {
+      state.patterns[replaceIndex] = savedPattern;
+    }
+    setStatus(patternName);
     persist();
     state.undo = [];
     historyButtons();
@@ -1677,11 +1746,22 @@
   });
   $('saveVersion').onclick = () => {
     $('patternNameInput').value = $('statusText').textContent === 'Untitled pattern' ? '' : $('statusText').textContent;
+    $('patternNameInput').dispatchEvent(new Event('input'));
     showDialog($('nameDialog'));
+  };
+  $('patternNameInput').oninput = () => {
+    const hasDuplicate = findSavedPatternIndex($('patternNameInput').value) !== -1;
+    $('saveCopy').hidden = !hasDuplicate;
+    $('saveCopy').disabled = !hasDuplicate || !$('patternNameInput').value.trim();
   };
   $('nameForm').onsubmit = e => {
     e.preventDefault();
     savePattern($('patternNameInput').value);
+    $('nameDialog').close();
+  };
+  $('saveCopy').onclick = () => {
+    if (!$('nameForm').reportValidity()) return;
+    savePattern($('patternNameInput').value, true);
     $('nameDialog').close();
   };
   $('myPatterns').onclick = () => {

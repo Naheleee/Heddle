@@ -4,6 +4,11 @@ if (sessionStorage.getItem("page-transition") === "in") {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  const projectName = new URLSearchParams(window.location.search).get("project");
+  if (projectName) {
+    document.querySelector("#tutorialProjectName").textContent = projectName;
+  }
+
   const tutorialSteps = [
     {
       title: "Step 1",
@@ -44,10 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const previousStepButton = document.querySelector("#previousStep");
   const nextStepButton = document.querySelector("#nextStep");
   const stepImages = tutorialSteps.map((_, stepIndex) => {
-    if (stepIndex === 0) {
-      return tutorialImage;
-    }
-
     const image = new Image();
     image.src = `../Assets/Images/Tutorial_${stepIndex + 1}.png`;
     image.addEventListener(
@@ -78,9 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       tutorialImage.src = requestedImage.src;
       tutorialImage.alt = step.imageAlt;
-      tutorialImage.classList.remove("step-image-transition");
-      void tutorialImage.offsetWidth;
-      tutorialImage.classList.add("step-image-transition");
     };
 
     if (requestedImage.complete) {

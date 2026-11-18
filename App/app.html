@@ -257,8 +257,11 @@
       </div>
       <p class="panel-description">Save your current pattern</p><input id="patternNameInput" class="name-input"
         maxlength="48" required placeholder="My work">
-      <div class="modal-footer"><button type="button" class="secondary-button" data-close>Cancel</button><button
-          type="submit" class="primary-button">Save</button></div>
+      <div class="modal-footer">
+        <button type="button" class="secondary-button" data-close>Cancel</button>
+        <button type="button" id="saveCopy" class="secondary-button" hidden>Save copy</button>
+        <button type="submit" class="primary-button">Save</button>
+      </div>
     </form>
   </dialog>
   <script src="app.js"></script>
@@ -320,8 +323,10 @@
 
       sessionStorage.setItem("page-transition", "in");
       document.body.classList.add("page-leaving");
+      const tutorialUrl = new URL(tutorialLink.href);
+      tutorialUrl.searchParams.set("project", document.querySelector("#statusText").textContent);
       window.setTimeout(() => {
-        window.location.assign(tutorialLink.href);
+        window.location.assign(tutorialUrl.href);
       }, 350);
     });
 
