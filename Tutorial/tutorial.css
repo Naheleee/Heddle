@@ -33,7 +33,7 @@ body {
   padding-top: env(safe-area-inset-top, 0px);
   display: flex;
   flex-direction: column;
-  background-color: rgb(230, 230, 230);
+  background-color: #fff;
 }
 
 main {
@@ -41,6 +41,7 @@ main {
   min-height: 0;
   position: relative;
   overflow: hidden;
+  background-color: rgb(230, 230, 230);
 }
 
 .toolbar {
