@@ -25,8 +25,11 @@
 
 body {
   min-width: 320px;
+  min-height: 100vh;
+  min-height: calc(100dvh + env(safe-area-inset-top, 0px));
   margin: 0;
-  background: #f1f0ec;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: linear-gradient(to bottom, #fff 0, #fff env(safe-area-inset-top, 0px), #f1f0ec env(safe-area-inset-top, 0px));
 }
 
 @media (prefers-reduced-motion: reduce) {
