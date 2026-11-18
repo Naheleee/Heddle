@@ -9,35 +9,34 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#tutorialProjectName").textContent = projectName;
   }
 
-  const tutorialSteps = [
-    {
-      title: "Step 1",
-      description: "Blah blah blah.",
-      imageAlt: "A hand threads the first warp end through the loom.",
+  const tutorialSteps = [{
+      title: "Start",
+      description: "Wind the thread into the<br>first slot of the loom.",
+      imageAlt: "Wind the thread into the first slot of the loom.",
     },
     {
-      title: "Step 2",
-      description: "Blah blah blah.",
-      imageAlt: "A hand pulls the yarn through the loom heddle.",
+      title: "Go back",
+      description: "Extend the thread to the other end<br>and come back, passing it through<br>the third slot on the heddle.",
+      imageAlt: "Extend the thread to the other end and come back, passing it through the third slot on the heddle.",
     },
     {
-      title: "Step 3",
-      description: "Blah blah blah.",
-      imageAlt: "A close-up shows the yarn passing through a heddle opening.",
+      title: "Return",
+      description: "Return to the first slot and pass<br>the thread through the second<br>slot of the heddle.",
+      imageAlt: "Return to the first slot and pass the thread through the second slot of the heddle.",
     },
     {
-      title: "Step 4",
-      description: "Blah blah blah.",
-      imageAlt: "Arrows show the repeated threading pattern across the heddle.",
+      title: "First steps",
+      description: "Extend the thread to the other end and<br>come back, passing it through the<br>fourth slot on the heddle.",
+      imageAlt: "Extend the thread to the other end and come back, passing it through the fourth slot on the heddle.",
     },
     {
-      title: "Step 5",
-      description: "Blah blah blah.",
-      imageAlt: "The loom is filled with threaded warp ends.",
+      title: "Repeat",
+      description: "Repeat the process until<br>you have the exact number<br>of warps you need.",
+      imageAlt: "Repeat the process until you have the exact number of warps you need.",
     },
     {
-      title: "Step 6",
-      description: "Blah blah blah.",
+      title: "Close",
+      description: "Trim the excess thread<br>with some scissors.",
       imageAlt: "The completed warp is trimmed with scissors.",
     },
   ];
@@ -53,8 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
     image.src = `../Assets/Images/Tutorial_${stepIndex + 1}.png`;
     image.addEventListener(
       "error",
-      () => console.error(`Failed to preload tutorial image for step ${stepIndex + 1}.`),
-      { once: true }
+      () => console.error(`Failed to preload tutorial image for step ${stepIndex + 1}.`), {
+        once: true
+      }
     );
     return image;
   });
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentStep = stepIndex;
     stepNumber.textContent = circledNumbers[stepIndex];
     stepTitle.textContent = step.title;
-    stepDescription.textContent = step.description;
+    stepDescription.textContent = step.description.replace(/<br\s*\/?>/gi, "\n");
     previousStepButton.disabled = stepIndex === 0;
     nextStepButton.disabled = stepIndex === tutorialSteps.length - 1;
 
@@ -84,8 +84,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (requestedImage.complete) {
       displayImage();
     } else {
-      requestedImage.addEventListener("load", displayImage, { once: true });
-      requestedImage.addEventListener("error", displayImage, { once: true });
+      requestedImage.addEventListener("load", displayImage, {
+        once: true
+      });
+      requestedImage.addEventListener("error", displayImage, {
+        once: true
+      });
     }
   };
 
@@ -95,6 +99,8 @@ document.addEventListener("DOMContentLoaded", () => {
   nextStepButton.addEventListener("click", () => {
     showStep(currentStep + 1);
   });
+
+  showStep(0);
 
   const transitionLinks = document.querySelectorAll(
     'a[href="../index.html"], a[href="../App/app.html"]'

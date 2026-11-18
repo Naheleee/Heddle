@@ -170,10 +170,18 @@ main {
   color: grey;
   font-size: clamp(.9rem, 1.3vw, 1.1rem);
   font-style: medium;
+  white-space: pre-line;
 }
 
 .step-number {
   font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.7;
+}
+
+@media (max-width: 1380px) {
+  .step-number {
+    line-height: 0.64;
+  }
 }
 
 .tutorial-image-container {
@@ -214,6 +222,36 @@ main {
   width: clamp(24px, 3vw, 36px);
   height: clamp(24px, 3vw, 36px);
   object-fit: contain;
+}
+
+.arrows--left img {
+  animation: arrow-wiggle-left 2.4s cubic-bezier(.65, 0, .35, 1) infinite;
+}
+
+.arrows--right img {
+  animation: arrow-wiggle-right 2.4s cubic-bezier(.65, 0, .35, 1) infinite;
+}
+
+@keyframes arrow-wiggle-left {
+  0%,
+  100% {
+    transform: translateX(-3px);
+  }
+
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes arrow-wiggle-right {
+  0%,
+  100% {
+    transform: translateX(3px);
+  }
+
+  50% {
+    transform: translateX(-3px);
+  }
 }
 
 .arrows:disabled {
@@ -332,5 +370,9 @@ body.page-leaving .page-transition {
 
   .arrows--left {
     transition: none;
+  }
+
+  .arrows img {
+    animation: none;
   }
 }
