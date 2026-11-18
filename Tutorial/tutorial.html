@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Heddle">
   <meta name="theme-color" content="#f1f0ec">
-  <title>Getting started | Heddle</title>
+  <title>Step by Step</title>
   <link rel="apple-touch-icon" sizes="180x180" href="../Assets/Logo/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="../Assets/Logo/Favicon.png">
   <link rel="stylesheet" href="tutorial.css">
@@ -17,14 +17,40 @@
 </head>
 
 <body>
-  <header class="site-header">
-    <a class="brand" href="../index.html" aria-label="Heddle home">
-      <img src="../Assets/Logo/Logo_1.png" alt="Heddle">
+  <div class="page-transition" aria-hidden="true"></div>
+  <header class="toolbar">
+    <a href="../index.html" aria-label="Heddle home">
+      <img class="toolbar-logo" src="../Assets/Logo/Logo_1.png" alt="Heddle">
     </a>
-    <a class="designer-link" href="../App/app.html">Open the designer <span aria-hidden="true">→</span></a>
   </header>
 
-  
+  <main>
+      <header class="section-header">
+        <div class="section-header__title">
+          <span class="step-number" id="stepNumber" aria-hidden="true">①</span>
+          <div class="section-header__copy" aria-live="polite" aria-atomic="true">
+            <h2 id="section-title">Step 1</h2>
+            <p id="stepDescription">Blah blah blah.</p>
+          </div>
+        </div>
+      </header>
+      <div class="tutorial-image-container">
+        <img
+          class="tutorial-image"
+          src="../Assets/Images/Tutorial_1.png"
+          alt="Rigid-heddle loom setup, step 1">
+      </div>
+      <button class="arrows arrows--left" id="previousStep" type="button" aria-label="Previous step" disabled>
+        <img src="../Assets/Icons/Arrow_left.svg" alt="" aria-hidden="true">
+      </button>
+      <button class="arrows arrows--right" id="nextStep" type="button" aria-label="Next step">
+        <img src="../Assets/Icons/Arrow_right.svg" alt="" aria-hidden="true">
+      </button>
+  </main>
+  <a class="back-to-editor-button" href="../App/app.html">
+    <img class="back-to-editor-button__icon" src="../Assets/Icons/Left.svg" alt="" aria-hidden="true">
+    <span>Back to editor</span>
+  </a>
 </body>
 
 </html>
