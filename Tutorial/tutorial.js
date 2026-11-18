@@ -43,7 +43,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const tutorialImage = document.querySelector(".tutorial-image");
   const previousStepButton = document.querySelector("#previousStep");
   const nextStepButton = document.querySelector("#nextStep");
+  const stepImages = tutorialSteps.map((_, stepIndex) => {
+    if (stepIndex === 0) {
+      return tutorialImage;
+    }
+
+    const image = new Image();
+    image.src = `../Assets/Images/Tutorial_${stepIndex + 1}.png`;
+    image.addEventListener(
+      "error",
+      () => console.error(`Failed to preload tutorial image for step ${stepIndex + 1}.`),
+      { once: true }
+    );
+    return image;
+  });
   let currentStep = 0;
+  let imageRequest = 0;
 
   const showStep = (stepIndex) => {
     const step = tutorialSteps[stepIndex];
@@ -51,10 +66,29 @@ document.addEventListener("DOMContentLoaded", () => {
     stepNumber.textContent = circledNumbers[stepIndex];
     stepTitle.textContent = step.title;
     stepDescription.textContent = step.description;
-    tutorialImage.src = `../Assets/Images/Tutorial_${stepIndex + 1}.png`;
-    tutorialImage.alt = step.imageAlt;
     previousStepButton.disabled = stepIndex === 0;
     nextStepButton.disabled = stepIndex === tutorialSteps.length - 1;
+
+    const requestedImage = stepImages[stepIndex];
+    const requestId = ++imageRequest;
+    const displayImage = () => {
+      if (requestId !== imageRequest) {
+        return;
+      }
+
+      tutorialImage.src = requestedImage.src;
+      tutorialImage.alt = step.imageAlt;
+      tutorialImage.classList.remove("step-image-transition");
+      void tutorialImage.offsetWidth;
+      tutorialImage.classList.add("step-image-transition");
+    };
+
+    if (requestedImage.complete) {
+      displayImage();
+    } else {
+      requestedImage.addEventListener("load", displayImage, { once: true });
+      requestedImage.addEventListener("error", displayImage, { once: true });
+    }
   };
 
   previousStepButton.addEventListener("click", () => {

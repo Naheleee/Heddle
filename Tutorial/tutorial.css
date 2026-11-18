@@ -155,6 +155,22 @@ main {
   scale: 1.1;
 }
 
+.tutorial-image.step-image-transition {
+  animation: tutorial-image-enter .28s ease both;
+}
+
+@keyframes tutorial-image-enter {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .arrows {
   position: absolute;
   top: 50%;
@@ -271,5 +287,9 @@ body.page-leaving .page-transition {
 @media (prefers-reduced-motion: reduce) {
   :root {
     scroll-behavior: auto;
+  }
+
+  .tutorial-image.step-image-transition {
+    animation: none;
   }
 }
