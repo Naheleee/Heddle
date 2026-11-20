@@ -1,3 +1,17 @@
+if (sessionStorage.getItem("page-transition") === "in") {
+  document.documentElement.classList.add("is-entering");
+  sessionStorage.removeItem("page-transition");
+}
+window.addEventListener("pageshow", (event) => {
+  if (!event.persisted) {
+    return;
+  }
+
+  document.body.classList.remove("page-leaving");
+  document.documentElement.classList.remove("is-entering");
+  sessionStorage.removeItem("page-transition");
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const projectName = new URLSearchParams(window.location.search).get("project");
   const weaveUrl = new URL("../Weave/weave.html", window.location.href);

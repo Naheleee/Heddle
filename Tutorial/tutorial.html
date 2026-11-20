@@ -13,21 +13,6 @@
   <link rel="apple-touch-icon" sizes="180x180" href="../Assets/Logo/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="../Assets/Logo/Favicon.png">
   <link rel="stylesheet" href="tutorial.css">
-  <script>
-    if (sessionStorage.getItem("page-transition") === "in") {
-      document.documentElement.classList.add("is-entering");
-      sessionStorage.removeItem("page-transition");
-    }
-    window.addEventListener("pageshow", (event) => {
-      if (!event.persisted) {
-        return;
-      }
-
-      document.body.classList.remove("page-leaving");
-      document.documentElement.classList.remove("is-entering");
-      sessionStorage.removeItem("page-transition");
-    });
-  </script>
   <script src="tutorial.js" defer></script>
 </head>
 
@@ -44,41 +29,38 @@
   </header>
 
   <main>
-      <header class="section-header">
-        <div class="section-header__title">
-          <span class="step-number" id="stepNumber" aria-hidden="true">①</span>
-          <div class="section-header__copy" aria-live="polite" aria-atomic="true">
-            <h2 id="section-title">Start</h2>
-            <p id="stepDescription">Wind the thread into the<br>first slot of the loom.</p>
-          </div>
+    <header class="section-header">
+      <div class="section-header__title">
+        <span class="step-number" id="stepNumber" aria-hidden="true">①</span>
+        <div class="section-header__copy" aria-live="polite" aria-atomic="true">
+          <h2 id="section-title">Start</h2>
+          <p id="stepDescription">Wind the thread into the<br>first slot of the loom.</p>
         </div>
-        <button class="arrows arrows--left" id="previousStep" type="button" aria-label="Previous step" disabled>
-          <img src="../Assets/Icons/Arrow_left.svg" alt="" aria-hidden="true">
-        </button>
-        <button class="arrows arrows--right" id="nextStep" type="button" aria-label="Next step">
-          <span class="next-step-label is-visible" aria-hidden="true">Next</span>
-          <img src="../Assets/Icons/Arrow_right.svg" alt="" aria-hidden="true">
-          <span class="weave-button" aria-hidden="true">
-            <img class="weave-button-icon" src="../Assets/Icons/Weave.svg" alt="">
-            Weave!
-          </span>
-        </button>
-        <nav class="tutorial-footer" aria-label="Tutorial navigation">
-          <a class="back-to-editor-button" href="../App/app.html">
-            <img class="tutorial-footer__icon" src="../Assets/Icons/Pencil.svg" alt="" aria-hidden="true">
-            <span>Back to editor</span>
-          </a>
-          <a class="skip-button" href="../Weave/weave.html">
-            <span>Skip setup</span>
-          </a>
-        </nav>
-      </header>
-      <div class="tutorial-image-container">
-        <img
-          class="tutorial-image"
-          src="../Assets/Images/Tutorial_1.png"
-          alt="Rigid-heddle loom setup, step 1">
       </div>
+      <button class="arrows arrows--left" id="previousStep" type="button" aria-label="Previous step" disabled>
+        <img src="../Assets/Icons/Arrow_left.svg" alt="" aria-hidden="true">
+      </button>
+      <button class="arrows arrows--right" id="nextStep" type="button" aria-label="Next step">
+        <span class="next-step-label is-visible" aria-hidden="true">Next</span>
+        <img src="../Assets/Icons/Arrow_right.svg" alt="" aria-hidden="true">
+        <span class="weave-button" aria-hidden="true">
+          <img class="weave-button-icon" src="../Assets/Icons/Weave.svg" alt="">
+          Weave!
+        </span>
+      </button>
+      <nav class="tutorial-footer" aria-label="Tutorial navigation">
+        <a class="back-to-editor-button" href="../App/app.html">
+          <img class="tutorial-footer__icon" src="../Assets/Icons/Pencil.svg" alt="" aria-hidden="true">
+          <span>Back to editor</span>
+        </a>
+        <a class="skip-button" href="../Weave/weave.html">
+          <span>Skip setup</span>
+        </a>
+      </nav>
+    </header>
+    <div class="tutorial-image-container">
+      <img class="tutorial-image" src="../Assets/Images/Tutorial_1.png" alt="Rigid-heddle loom setup, step 1">
+    </div>
   </main>
 </body>
 

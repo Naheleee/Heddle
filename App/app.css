@@ -588,19 +588,6 @@ input[type="number"]:focus-visible {
     outline-offset: 3px;
 }
 
-@media (hover: none) {
-    .tutorial-button {
-        width: 90px;
-        gap: 8px;
-    }
-
-    .tutorial-button span {
-        max-width: 48px;
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
 @keyframes tutorial-button-intro {
     0%,
     15%,

@@ -1,5 +1,20 @@
 (() => {
   'use strict';
+  if (sessionStorage.getItem('page-transition') === 'in') {
+    document.documentElement.classList.add('is-entering');
+    sessionStorage.removeItem('page-transition');
+  }
+  window.addEventListener('pageshow', event => {
+    if (!event.persisted) return;
+
+    document.body.classList.remove('page-leaving');
+    document.documentElement.classList.remove('is-entering');
+    sessionStorage.removeItem('page-transition');
+  });
+})();
+
+(() => {
+  'use strict';
   const KEY = 'loomsketch-studio-v1';
   const GROUPS = {
     Naturals: [
@@ -2076,4 +2091,94 @@
   sync();
   historyButtons();
   render();
+})();
+
+(() => {
+  'use strict';
+  const toolbarLogo = document.querySelector('.toolbar-logo');
+  const updateToolbarLogo = () => {
+    const logoPath = window.innerWidth <= 1366
+      ? '../Assets/Logo/Logo_2.png'
+      : '../Assets/Logo/Logo_1.png';
+
+    if (toolbarLogo.getAttribute('src') !== logoPath) {
+      toolbarLogo.setAttribute('src', logoPath);
+    }
+  };
+
+  updateToolbarLogo();
+  window.addEventListener('resize', updateToolbarLogo);
+
+  const homeLink = document.querySelector('.toolbar a[href="../index.html"]');
+  homeLink.addEventListener('click', event => {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    if (document.body.classList.contains('page-leaving')) {
+      return;
+    }
+
+    sessionStorage.setItem('page-transition', 'in');
+    document.body.classList.add('page-leaving');
+    window.setTimeout(() => {
+      window.location.assign(homeLink.href);
+    }, 350);
+  });
+
+  const tutorialLink = document.querySelector('#tutorial-button');
+  let tutorialLabelTimer = 0;
+  const showTutorialLabel = () => {
+    tutorialLink.classList.remove('is-prompting');
+    void tutorialLink.offsetWidth;
+    tutorialLink.classList.add('is-prompting');
+  };
+  tutorialLink.addEventListener('animationend', event => {
+    if (event.target === tutorialLink) {
+      tutorialLink.classList.remove('is-prompting');
+    }
+  });
+  showTutorialLabel();
+  tutorialLabelTimer = window.setInterval(showTutorialLabel, 3 * 60 * 1000);
+
+  tutorialLink.addEventListener('click', event => {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    window.clearInterval(tutorialLabelTimer);
+    if (document.body.classList.contains('page-leaving')) {
+      return;
+    }
+
+    sessionStorage.setItem('page-transition', 'in');
+    document.body.classList.add('page-leaving');
+    const tutorialUrl = new URL(tutorialLink.href);
+    tutorialUrl.searchParams.set('project', document.querySelector('#statusText').textContent);
+    window.setTimeout(() => {
+      window.location.assign(tutorialUrl.href);
+    }, 350);
+  });
+
+  if (document.documentElement.classList.contains('is-entering')) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.remove('is-entering');
+      });
+    });
+  }
 })();
