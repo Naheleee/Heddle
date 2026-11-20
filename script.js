@@ -3,6 +3,16 @@ if (sessionStorage.getItem("page-transition") === "in") {
     sessionStorage.removeItem("page-transition");
 }
 
+window.addEventListener("pageshow", (event) => {
+    if (!event.persisted) {
+        return;
+    }
+
+    document.body.classList.remove("page-leaving");
+    document.documentElement.classList.remove("is-entering");
+    sessionStorage.removeItem("page-transition");
+});
+
 document.addEventListener("DOMContentLoaded", () => {
     const patternGrid = document.querySelector(".button-logo");
     const gridSize = 10;
@@ -96,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cursorTrailReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     if (cursorTrailContext && cursorTrailInput.matches && !cursorTrailReducedMotion.matches) {
-        const gridSize = 10;
+        const gridSize = 5;
         const minimumTrailSpeed = 100;
         const trailLifetime = 50;
         const maxTrailPixels = 160;
@@ -286,6 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const carouselSection = document.querySelector(".section2");
     const carouselHeading = document.querySelector(".carousel-heading");
     const section4Heading = document.querySelector(".section4-heading");
+    const section5Heading = document.querySelector(".section5-heading");
     const alignSectionHeadings = () => {
         const carouselHeadingTop =
             carouselHeading.getBoundingClientRect().top - carouselSection.getBoundingClientRect().top;
@@ -296,6 +307,10 @@ document.addEventListener("DOMContentLoaded", () => {
         section4Heading.style.setProperty(
             "--section4-heading-offset",
             `${carouselHeadingTop - section4Heading.offsetTop}px`
+        );
+        section5Heading.style.setProperty(
+            "--section5-heading-offset",
+            `${carouselHeadingTop - section5Heading.offsetTop}px`
         );
     };
 

@@ -19,6 +19,15 @@
       document.documentElement.classList.add("is-entering");
       sessionStorage.removeItem("page-transition");
     }
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted) {
+        return;
+      }
+
+      document.body.classList.remove("page-leaving");
+      document.documentElement.classList.remove("is-entering");
+      sessionStorage.removeItem("page-transition");
+    });
   </script>
 </head>
 

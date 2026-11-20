@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Heddle">
+  <meta name="theme-color" content="#ffffff">
+  <title>Weave</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="../Assets/Logo/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="../Assets/Logo/Favicon.png">
+  <link rel="stylesheet" href="weave.css">
+  <script>
+    if (sessionStorage.getItem("page-transition") === "in") {
+      document.documentElement.classList.add("is-entering");
+      sessionStorage.removeItem("page-transition");
+    }
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted) {
+        return;
+      }
+
+      document.body.classList.remove("page-leaving");
+      document.documentElement.classList.remove("is-entering");
+      sessionStorage.removeItem("page-transition");
+    });
+  </script>
+  <script src="weave.js" defer></script>
+</head>
+
+<body>
+  <div class="page-transition" aria-hidden="true"></div>
+  <header class="toolbar">
+    <a href="../index.html" aria-label="Heddle home">
+      <img class="toolbar-logo" src="../Assets/Logo/Logo_1.png" alt="Heddle">
+    </a>
+    <div class="tutorial-project-info">
+      <i aria-hidden="true"></i>
+      <span class="tutorial-project-name" id="tutorialProjectName"></span>
+    </div>
+  </header>
+  <main>
+    <header class="section-header">
+      <nav class="tutorial-footer" aria-label="Editor navigation">
+        <a class="back-to-editor-button" href="../App/app.html">
+          <img class="tutorial-footer__icon" src="../Assets/Icons/Pencil.svg" alt="" aria-hidden="true">
+          <span>Back to editor</span>
+        </a>
+      </nav>
+    </header>
+  </main>
+</body>
+
+</html>

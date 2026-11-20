@@ -1,10 +1,10 @@
-if (sessionStorage.getItem("page-transition") === "in") {
-  document.documentElement.classList.add("is-entering");
-  sessionStorage.removeItem("page-transition");
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   const projectName = new URLSearchParams(window.location.search).get("project");
+  const weaveUrl = new URL("../Weave/weave.html", window.location.href);
+  if (projectName !== null) {
+    weaveUrl.searchParams.set("project", projectName);
+  }
+  const weaveHref = weaveUrl.href;
   if (projectName) {
     document.querySelector("#tutorialProjectName").textContent = projectName;
   }
@@ -47,7 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const tutorialImage = document.querySelector(".tutorial-image");
   const previousStepButton = document.querySelector("#previousStep");
   const nextStepButton = document.querySelector("#nextStep");
+  const skipButton = document.querySelector(".skip-button");
+  const nextStepArrow = nextStepButton.querySelector("img");
   const nextStepLabel = document.querySelector(".next-step-label");
+  const isLastStep = (stepIndex) => stepIndex === tutorialSteps.length - 1;
   const stepImages = tutorialSteps.map((_, stepIndex) => {
     const image = new Image();
     image.src = `../Assets/Images/Tutorial_${stepIndex + 1}.png`;
@@ -64,12 +67,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const showStep = (stepIndex) => {
     const step = tutorialSteps[stepIndex];
+    const wasLastStep = isLastStep(currentStep);
+    const shouldFadeArrowIn =
+      wasLastStep &&
+      !isLastStep(stepIndex) &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     currentStep = stepIndex;
     stepNumber.textContent = circledNumbers[stepIndex];
     stepTitle.textContent = step.title;
     stepDescription.textContent = step.description.replace(/<br\s*\/?>/gi, "\n");
     previousStepButton.disabled = stepIndex === 0;
-    nextStepButton.disabled = stepIndex === tutorialSteps.length - 1;
+    nextStepButton.disabled = false;
+    skipButton.classList.toggle("is-hidden", isLastStep(stepIndex));
+    if (shouldFadeArrowIn) {
+      nextStepArrow.style.opacity = "0";
+    }
+    nextStepButton.classList.toggle("is-last-step", isLastStep(stepIndex));
+    if (shouldFadeArrowIn) {
+      void nextStepArrow.offsetWidth;
+      nextStepArrow.addEventListener("transitionend", (event) => {
+        if (event.propertyName === "opacity") {
+          nextStepArrow.style.removeProperty("opacity");
+        }
+      }, { once: true });
+      window.setTimeout(() => {
+        if (isLastStep(currentStep)) {
+          nextStepArrow.style.removeProperty("opacity");
+          return;
+        }
+        requestAnimationFrame(() => {
+          nextStepArrow.style.opacity = "1";
+        });
+      }, 100);
+    }
+    nextStepButton.setAttribute(
+      "aria-label",
+      isLastStep(stepIndex) ? "Weave!" : "Next step"
+    );
     nextStepLabel.classList.toggle("is-visible", stepIndex === 0);
 
     const requestedImage = stepImages[stepIndex];
@@ -99,6 +133,14 @@ document.addEventListener("DOMContentLoaded", () => {
     showStep(currentStep - 1);
   });
   nextStepButton.addEventListener("click", () => {
+    if (isLastStep(currentStep)) {
+      sessionStorage.setItem("page-transition", "in");
+      document.body.classList.add("page-leaving");
+      window.setTimeout(() => {
+        window.location.assign(weaveHref);
+      }, 350);
+      return;
+    }
     showStep(currentStep + 1);
   });
 
@@ -118,7 +160,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (event.key === "ArrowRight" && !nextStepButton.disabled) {
       event.preventDefault();
-      showStep(currentStep + 1);
+      if (isLastStep(currentStep)) {
+        sessionStorage.setItem("page-transition", "in");
+        document.body.classList.add("page-leaving");
+        window.setTimeout(() => {
+          window.location.assign(weaveHref);
+        }, 350);
+      } else {
+        showStep(currentStep + 1);
+      }
     } else if (event.key === "ArrowLeft" && !previousStepButton.disabled) {
       event.preventDefault();
       showStep(currentStep - 1);
@@ -128,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
   showStep(0);
 
   const transitionLinks = document.querySelectorAll(
-    'a[href="../index.html"], a[href="../App/app.html"]'
+    'a[href="../index.html"], a[href="../App/app.html"], .skip-button'
   );
 
   transitionLinks.forEach((link) => {
@@ -150,8 +200,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       sessionStorage.setItem("page-transition", "in");
       document.body.classList.add("page-leaving");
+      const destination = link.classList.contains("skip-button") ? weaveHref : link.href;
       window.setTimeout(() => {
-        window.location.assign(link.href);
+        window.location.assign(destination);
       }, 350);
     });
   });

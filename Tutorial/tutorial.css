@@ -156,14 +156,31 @@ main {
   font: 500 16px "ABCAreal", sans-serif;
   text-decoration: none;
   gap: 6px;
-  transition: color .2s ease, scale .3s ease;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .2s ease, visibility 0s linear .2s, color .2s ease, scale .3s ease;
+}
+
+.skip-button:not(.is-hidden) {
+  transition-delay: 0s;
+}
+
+.skip-button.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .skip-button:hover .tutorial-footer__icon {
   filter: none;
 }
 
-.skip-button:hover,
+.skip-button:hover {
+  scale: 1.02;
+  color: #171717;
+  transition: opacity .2s ease, visibility 0s linear .2s, color .2s ease, scale .3s ease;
+}
+
 .back-to-editor-button:hover {
   scale: 1.02;
   color: #171717;
@@ -175,10 +192,6 @@ main {
   height: 16px;
   flex: none;
   object-fit: contain;
-}
-
-.back-to-editor-button .tutorial-footer__icon {
-  transform: scaleX(-1);
 }
 
 .skip-button .tutorial-footer__icon {
@@ -304,7 +317,7 @@ main {
 }
 
 .arrows--right {
-  animation: arrow-wiggle-right 2.4s cubic-bezier(.65, 0, .35, 1) infinite;
+  animation: none;
 }
 
 @keyframes arrow-wiggle-left {
@@ -315,17 +328,6 @@ main {
 
   50% {
     transform: translateX(3px);
-  }
-}
-
-@keyframes arrow-wiggle-right {
-  0%,
-  100% {
-    transform: translate(3px, -50%);
-  }
-
-  50% {
-    transform: translate(-3px, -50%);
   }
 }
 
@@ -350,6 +352,90 @@ main {
 
 .arrows--right {
   right: 0;
+  width: 104px;
+  isolation: isolate;
+}
+
+.arrows--right.is-last-step {
+  width: 104px;
+  height: 48px;
+  min-width: 104px;
+  padding: 0 20px;
+  transform: translateY(-50%);
+  animation: none;
+  transition: scale .3s ease;
+}
+
+.arrows--right.is-last-step:hover {
+  scale: 1.02;
+}
+
+.arrows--right::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 15px;
+  background: #171717;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+
+.arrows--right.is-last-step::before {
+  opacity: 1;
+  transition-delay: .2s;
+}
+
+.arrows--right > img {
+  position: absolute;
+  right: 6px;
+}
+
+.arrows--right .next-step-label {
+  right: 48px;
+  margin-right: 5px;
+}
+
+.arrows--right > img,
+.arrows--right .next-step-label,
+.weave-button {
+  transition: opacity .2s ease;
+}
+
+.arrows--right > img {
+  opacity: 1;
+}
+
+.weave-button {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0;
+  color: #fff;
+  font: 500 16px "ABCAreal", sans-serif;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.arrows--right .weave-button-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  object-fit: contain;
+}
+
+.arrows--right.is-last-step .weave-button {
+  opacity: 1;
+  transition-delay: .2s;
+}
+
+.arrows--right.is-last-step > img,
+.arrows--right.is-last-step .next-step-label {
+  opacity: 0;
 }
 
 
@@ -462,6 +548,18 @@ body.page-leaving .page-transition {
   }
 
   .next-step-label {
+    transition: none;
+  }
+
+  .skip-button {
+    transition: none;
+  }
+
+  .arrows--right.is-last-step,
+  .arrows--right::before,
+  .arrows--right img,
+  .arrows--right .next-step-label,
+  .weave-button {
     transition: none;
   }
 }

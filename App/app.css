@@ -536,7 +536,7 @@ input[type="number"]:focus-visible {
     overflow: hidden;
     padding: 0 11px;
     border: 0;
-    border-radius: 6px;
+    border-radius: 7px;
     background: #111111;
     color: #ffffff;
     font-size: 13px;
@@ -1682,10 +1682,6 @@ input[type=range]::-moz-range-thumb {
     line-height: 1
 }
 
-.pattern-card-actions .open-pattern span {
-    transform: translateY(-1px)
-}
-
 .pattern-card-actions .delete-pattern {
     display: flex;
     width: 36px;
@@ -2322,6 +2318,53 @@ input[type=range]::-moz-range-thumb {
 .pattern-card-actions button:hover {
     border-color: #999999;
     color: #111111
+}
+
+.pattern-card-actions .open-pattern,
+.pattern-card-actions .export-pattern {
+    border-color: #e7e7e7;
+    background: #ffffff;
+    color: #171717;
+    font-size: 10px;
+    font-weight: 600
+}
+
+.pattern-card-actions .open-pattern:hover,
+.pattern-card-actions .export-pattern:hover {
+    border-color: #d1d1d1;
+    background: #f4f4f4;
+    color: #171717;
+    box-shadow: 0 3px 9px #00000012
+}
+
+.pattern-card-actions .weave-pattern {
+    display: grid;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    padding: 0;
+    place-items: center;
+    border-color: #171717;
+    background: #171717;
+    color: #ffffff
+}
+
+.pattern-card-actions .weave-pattern .ui-icon {
+    width: 16px;
+    height: 16px;
+    margin: 0
+}
+
+.pattern-card-actions .weave-pattern:hover {
+    border-color: #333333;
+    background: #333333;
+    color: #ffffff
+}
+
+@media (min-width: 901px) {
+    .pattern-card-actions .open-pattern {
+        font-size: 12px
+    }
 }
 
 .pattern-card-actions .delete-pattern {

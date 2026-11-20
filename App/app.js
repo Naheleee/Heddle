@@ -1543,6 +1543,25 @@
       meta.append(titleRow, details);
       let actions = document.createElement('div');
       actions.className = 'pattern-card-actions';
+      let weaveButton = document.createElement('button');
+      weaveButton.type = 'button';
+      weaveButton.className = 'weave-pattern';
+      weaveButton.setAttribute('aria-label', `Weave ${d.name}`);
+      weaveButton.title = 'Open weaving tutorial';
+      let weaveIcon = document.createElement('img');
+      weaveIcon.className = 'ui-icon';
+      weaveIcon.src = '../Assets/Icons/Weave.svg';
+      weaveIcon.alt = '';
+      weaveIcon.setAttribute('aria-hidden', 'true');
+      weaveButton.append(weaveIcon);
+      weaveButton.onclick = () => {
+        if (document.body.classList.contains('page-leaving')) return;
+        const tutorialUrl = new URL('../Tutorial/tutorial.html', window.location.href);
+        tutorialUrl.searchParams.set('project', d.name);
+        sessionStorage.setItem('page-transition', 'in');
+        document.body.classList.add('page-leaving');
+        window.setTimeout(() => window.location.assign(tutorialUrl.href), 350);
+      };
       let exportButton = document.createElement('button');
       exportButton.type = 'button';
       exportButton.className = 'export-pattern';
@@ -1584,21 +1603,36 @@
       deleteIcon.alt = '';
       deleteIcon.setAttribute('aria-hidden', 'true');
       del.append(deleteIcon);
+      let deleteConfirmationTimer = 0;
+      let deleteConfirmationLabel = null;
+      const resetDeleteConfirmation = () => {
+        window.clearTimeout(deleteConfirmationTimer);
+        deleteConfirmationTimer = 0;
+        if (deleteConfirmationLabel) {
+          deleteConfirmationLabel.remove();
+          deleteConfirmationLabel = null;
+        }
+        del.classList.remove('is-confirming');
+        del.setAttribute('aria-label', 'Delete pattern');
+        del.title = 'Delete pattern';
+      };
       del.onclick = () => {
         if (!del.classList.contains('is-confirming')) {
-          let confirmation = document.createElement('span');
-          confirmation.textContent = 'Delete?';
-          del.insertBefore(confirmation, deleteIcon);
+          deleteConfirmationLabel = document.createElement('span');
+          deleteConfirmationLabel.textContent = 'Delete?';
+          del.insertBefore(deleteConfirmationLabel, deleteIcon);
           del.classList.add('is-confirming');
           del.setAttribute('aria-label', 'Confirm delete pattern');
           del.title = 'Delete?';
+          deleteConfirmationTimer = window.setTimeout(resetDeleteConfirmation, 5000);
           return;
         }
+        window.clearTimeout(deleteConfirmationTimer);
         state.patterns = state.patterns.filter(item => item.id !== d.id);
         persist();
         renderPatterns();
       };
-      actions.append(open, exportButton, del);
+      actions.append(weaveButton, open, exportButton, del);
       card.append(img, meta, actions);
       root.append(card);
     });

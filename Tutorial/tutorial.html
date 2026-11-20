@@ -9,10 +9,25 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Heddle">
   <meta name="theme-color" content="#ffffff">
-  <title>Step by Step</title>
+  <title>Setup</title>
   <link rel="apple-touch-icon" sizes="180x180" href="../Assets/Logo/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="../Assets/Logo/Favicon.png">
   <link rel="stylesheet" href="tutorial.css">
+  <script>
+    if (sessionStorage.getItem("page-transition") === "in") {
+      document.documentElement.classList.add("is-entering");
+      sessionStorage.removeItem("page-transition");
+    }
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted) {
+        return;
+      }
+
+      document.body.classList.remove("page-leaving");
+      document.documentElement.classList.remove("is-entering");
+      sessionStorage.removeItem("page-transition");
+    });
+  </script>
   <script src="tutorial.js" defer></script>
 </head>
 
@@ -43,13 +58,17 @@
         <button class="arrows arrows--right" id="nextStep" type="button" aria-label="Next step">
           <span class="next-step-label is-visible" aria-hidden="true">Next</span>
           <img src="../Assets/Icons/Arrow_right.svg" alt="" aria-hidden="true">
+          <span class="weave-button" aria-hidden="true">
+            <img class="weave-button-icon" src="../Assets/Icons/Weave.svg" alt="">
+            Weave!
+          </span>
         </button>
         <nav class="tutorial-footer" aria-label="Tutorial navigation">
           <a class="back-to-editor-button" href="../App/app.html">
-            <img class="tutorial-footer__icon" src="../Assets/Icons/Rotate.svg" alt="" aria-hidden="true">
+            <img class="tutorial-footer__icon" src="../Assets/Icons/Pencil.svg" alt="" aria-hidden="true">
             <span>Back to editor</span>
           </a>
-          <a class="skip-button" href="../App/app.html">
+          <a class="skip-button" href="../Weave/weave.html">
             <span>Skip setup</span>
             <img class="tutorial-footer__icon" src="../Assets/Icons/Right.svg" alt="" aria-hidden="true">
           </a>
