@@ -544,6 +544,9 @@ input[type="number"]:focus-visible {
     text-decoration: none;
     white-space: nowrap;
     transition: width .3s ease, gap .3s ease, background-color .15s ease;
+}
+
+.tutorial-button.is-prompting {
     animation: tutorial-button-intro 5.6s ease .4s;
 }
 
@@ -553,6 +556,9 @@ input[type="number"]:focus-visible {
     opacity: 0;
     transform: translateX(8px);
     transition: max-width .3s ease, opacity .2s ease, transform .3s ease;
+}
+
+.tutorial-button.is-prompting span {
     animation: tutorial-button-label-intro 5.6s ease .4s;
 }
 
@@ -580,6 +586,19 @@ input[type="number"]:focus-visible {
 .tutorial-button:focus-visible {
     outline: 2px solid #ffffff;
     outline-offset: 3px;
+}
+
+@media (hover: none) {
+    .tutorial-button {
+        width: 90px;
+        gap: 8px;
+    }
+
+    .tutorial-button span {
+        max-width: 48px;
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes tutorial-button-intro {

@@ -90,6 +90,195 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const section1 = document.querySelector(".section1");
+    const cursorTrailCanvas = document.querySelector(".cursor-pixel-trail");
+    const cursorTrailContext = cursorTrailCanvas.getContext("2d", { desynchronized: true });
+    const cursorTrailInput = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const cursorTrailReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    if (cursorTrailContext && cursorTrailInput.matches && !cursorTrailReducedMotion.matches) {
+        const gridSize = 10;
+        const minimumTrailSpeed = 100;
+        const trailLifetime = 50;
+        const maxTrailPixels = 160;
+        const trailPixels = [];
+        const trailPixelsByKey = new Map();
+        let lastPointerPosition = null;
+        let lastTrailCell = null;
+        let trailFrame = 0;
+        let trailWidth = 0;
+        let trailHeight = 0;
+        let trailScale = 1;
+        let sectionBounds = section1.getBoundingClientRect();
+
+        const clearCursorTrail = () => {
+            if (trailFrame) {
+                window.cancelAnimationFrame(trailFrame);
+                trailFrame = 0;
+            }
+            trailPixels.length = 0;
+            trailPixelsByKey.clear();
+            lastPointerPosition = null;
+            lastTrailCell = null;
+            cursorTrailContext.clearRect(0, 0, trailWidth, trailHeight);
+        };
+
+        const resizeCursorTrail = () => {
+            sectionBounds = section1.getBoundingClientRect();
+            trailWidth = sectionBounds.width;
+            trailHeight = sectionBounds.height;
+            trailScale = window.devicePixelRatio || 1;
+            cursorTrailCanvas.width = Math.round(trailWidth * trailScale);
+            cursorTrailCanvas.height = Math.round(trailHeight * trailScale);
+            cursorTrailContext.setTransform(trailScale, 0, 0, trailScale, 0, 0);
+            clearCursorTrail();
+        };
+
+        const updateCursorTrailBounds = () => {
+            sectionBounds = section1.getBoundingClientRect();
+        };
+
+        const getTrailPixelBounds = (pixel) => {
+            const left = Math.round(pixel.x * gridSize * trailScale) / trailScale;
+            const top = Math.round(pixel.y * gridSize * trailScale) / trailScale;
+            const right = Math.round((pixel.x + 1) * gridSize * trailScale) / trailScale;
+            const bottom = Math.round((pixel.y + 1) * gridSize * trailScale) / trailScale;
+            return { left, top, width: right - left, height: bottom - top };
+        };
+
+        const clearTrailPixel = (pixel) => {
+            const bounds = getTrailPixelBounds(pixel);
+            cursorTrailContext.clearRect(bounds.left, bounds.top, bounds.width, bounds.height);
+        };
+
+        const drawTrailPixel = (pixel, now) => {
+            const bounds = getTrailPixelBounds(pixel);
+            const opacity = 1 - (now - pixel.createdAt) / trailLifetime;
+            clearTrailPixel(pixel);
+            if (opacity <= 0) {
+                return false;
+            }
+
+            cursorTrailContext.fillStyle = "#000";
+            cursorTrailContext.globalAlpha = opacity;
+            cursorTrailContext.fillRect(bounds.left, bounds.top, bounds.width, bounds.height);
+            cursorTrailContext.globalAlpha = 1;
+            return true;
+        };
+
+        const addTrailCell = (x, y, createdAt) => {
+            const key = `${x},${y}`;
+            const existingPixel = trailPixelsByKey.get(key);
+            if (existingPixel) {
+                existingPixel.createdAt = createdAt;
+                drawTrailPixel(existingPixel, createdAt);
+                return;
+            }
+
+            const pixel = { x, y, key, createdAt };
+            trailPixelsByKey.set(key, pixel);
+            trailPixels.push(pixel);
+            if (trailPixels.length > maxTrailPixels) {
+                const removedPixel = trailPixels.shift();
+                trailPixelsByKey.delete(removedPixel.key);
+                clearTrailPixel(removedPixel);
+            }
+            drawTrailPixel(pixel, createdAt);
+        };
+
+        const addTrailLine = (start, end, createdAt) => {
+            let x = start.x;
+            let y = start.y;
+            const deltaX = Math.abs(end.x - start.x);
+            const stepX = start.x < end.x ? 1 : -1;
+            const deltaY = -Math.abs(end.y - start.y);
+            const stepY = start.y < end.y ? 1 : -1;
+            let error = deltaX + deltaY;
+
+            while (true) {
+                addTrailCell(x, y, createdAt);
+                if (x === end.x && y === end.y) {
+                    break;
+                }
+
+                const doubledError = 2 * error;
+                let movedX = false;
+                if (doubledError >= deltaY) {
+                    error += deltaY;
+                    x += stepX;
+                    movedX = true;
+                }
+                if (doubledError <= deltaX) {
+                    if (movedX) {
+                        addTrailCell(x, y, createdAt);
+                    }
+                    error += deltaX;
+                    y += stepY;
+                }
+            }
+        };
+
+        const drawCursorTrail = (now) => {
+            for (let index = trailPixels.length - 1; index >= 0; index--) {
+                const pixel = trailPixels[index];
+                if (!drawTrailPixel(pixel, now)) {
+                    trailPixelsByKey.delete(pixel.key);
+                    trailPixels.splice(index, 1);
+                }
+            }
+
+            if (trailPixels.length > 0 && !trailFrame) {
+                trailFrame = window.requestAnimationFrame(animateCursorTrail);
+            }
+        };
+
+        const animateCursorTrail = (now) => {
+            trailFrame = 0;
+            drawCursorTrail(now);
+        };
+
+        const handleCursorTrailMove = (event) => {
+            if (event.pointerType !== "mouse") {
+                return;
+            }
+
+            const cell = {
+                x: Math.floor((event.clientX - sectionBounds.left) / gridSize),
+                y: Math.floor((event.clientY - sectionBounds.top) / gridSize),
+            };
+            const now = performance.now();
+            const pointerTime = event.timeStamp;
+            const speed = lastPointerPosition
+                ? Math.hypot(
+                    event.clientX - lastPointerPosition.x,
+                    event.clientY - lastPointerPosition.y
+                ) / Math.max(pointerTime - lastPointerPosition.time, 1) * 1000
+                : 0;
+
+            if (speed >= minimumTrailSpeed) {
+                if (lastTrailCell) {
+                    addTrailLine(lastTrailCell, cell, now);
+                } else {
+                    addTrailCell(cell.x, cell.y, now);
+                }
+                if (!trailFrame) {
+                    trailFrame = window.requestAnimationFrame(animateCursorTrail);
+                }
+            }
+
+            lastPointerPosition = { x: event.clientX, y: event.clientY, time: pointerTime };
+            lastTrailCell = cell;
+        };
+        const trailMoveEvent = "onpointerrawupdate" in window ? "pointerrawupdate" : "pointermove";
+        section1.addEventListener(trailMoveEvent, handleCursorTrailMove, { passive: true });
+        section1.addEventListener("pointerleave", () => {
+            lastPointerPosition = null;
+            lastTrailCell = null;
+        });
+        window.addEventListener("resize", resizeCursorTrail);
+        window.addEventListener("scroll", updateCursorTrailBounds, { passive: true });
+        resizeCursorTrail();
+    }
+
     const scrollCueImage = document.querySelector(".section-scroll-cue img");
     const loomSection = document.querySelector(".section3");
     const nextSection = document.querySelector(".section2");

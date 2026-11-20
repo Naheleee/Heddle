@@ -37,6 +37,23 @@
             <p id="stepDescription">Wind the thread into the<br>first slot of the loom.</p>
           </div>
         </div>
+        <button class="arrows arrows--left" id="previousStep" type="button" aria-label="Previous step" disabled>
+          <img src="../Assets/Icons/Arrow_left.svg" alt="" aria-hidden="true">
+        </button>
+        <button class="arrows arrows--right" id="nextStep" type="button" aria-label="Next step">
+          <span class="next-step-label is-visible" aria-hidden="true">Next</span>
+          <img src="../Assets/Icons/Arrow_right.svg" alt="" aria-hidden="true">
+        </button>
+        <nav class="tutorial-footer" aria-label="Tutorial navigation">
+          <a class="back-to-editor-button" href="../App/app.html">
+            <img class="tutorial-footer__icon" src="../Assets/Icons/Rotate.svg" alt="" aria-hidden="true">
+            <span>Back to editor</span>
+          </a>
+          <a class="skip-button" href="../App/app.html">
+            <span>Skip setup</span>
+            <img class="tutorial-footer__icon" src="../Assets/Icons/Right.svg" alt="" aria-hidden="true">
+          </a>
+        </nav>
       </header>
       <div class="tutorial-image-container">
         <img
@@ -44,23 +61,7 @@
           src="../Assets/Images/Tutorial_1.png"
           alt="Rigid-heddle loom setup, step 1">
       </div>
-      <button class="arrows arrows--left" id="previousStep" type="button" aria-label="Previous step" disabled>
-        <img src="../Assets/Icons/Arrow_left.svg" alt="" aria-hidden="true">
-      </button>
-      <button class="arrows arrows--right" id="nextStep" type="button" aria-label="Next step">
-        <img src="../Assets/Icons/Arrow_right.svg" alt="" aria-hidden="true">
-      </button>
   </main>
-  <nav class="tutorial-footer" aria-label="Tutorial navigation">
-    <a class="back-to-editor-button" href="../App/app.html">
-      <img class="tutorial-footer__icon" src="../Assets/Icons/Left.svg" alt="" aria-hidden="true">
-      <span>Back to editor</span>
-    </a>
-    <a class="skip-button" href="../App/app.html">
-      <span>Skip setup</span>
-      <img class="tutorial-footer__icon" src="../Assets/Icons/Right.svg" alt="" aria-hidden="true">
-    </a>
-  </nav>
 </body>
 
 </html>

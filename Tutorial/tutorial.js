@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
       imageAlt: "Wind the thread into the first slot of the loom.",
     },
     {
-      title: "Go back",
-      description: "Extend the thread to the other end<br>and come back, passing it through<br>the third slot on the heddle.",
+      title: "Come back",
+      description: "Extend the thread to the other end<br>and come back, passing it through<br>the third slot on the heddle.<br><br>Make sure to keep the<br>threads well taut.",
       imageAlt: "Extend the thread to the other end and come back, passing it through the third slot on the heddle.",
     },
     {
@@ -26,17 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       title: "First steps",
-      description: "Extend the thread to the other end and<br>come back, passing it through the<br>fourth slot on the heddle.",
+      description: "Extend the thread to the other end again<br>and come back, passing it through the<br>fourth slot on the heddle.",
       imageAlt: "Extend the thread to the other end and come back, passing it through the fourth slot on the heddle.",
     },
     {
       title: "Repeat",
-      description: "Repeat the process until<br>you have the exact number<br>of warps you need.",
+      description: "Repeat the process until<br>you have the exact number<br>of warps you need.<br><br>4x, 8x, 16x, 24x …",
       imageAlt: "Repeat the process until you have the exact number of warps you need.",
     },
     {
-      title: "Close",
-      description: "Trim the excess thread<br>with some scissors.",
+      title: "Wrap up",
+      description: "Trim the excess thread with<br>some scissors and you're<br>ready to start!",
       imageAlt: "The completed warp is trimmed with scissors.",
     },
   ];
@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tutorialImage = document.querySelector(".tutorial-image");
   const previousStepButton = document.querySelector("#previousStep");
   const nextStepButton = document.querySelector("#nextStep");
+  const nextStepLabel = document.querySelector(".next-step-label");
   const stepImages = tutorialSteps.map((_, stepIndex) => {
     const image = new Image();
     image.src = `../Assets/Images/Tutorial_${stepIndex + 1}.png`;
@@ -69,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     stepDescription.textContent = step.description.replace(/<br\s*\/?>/gi, "\n");
     previousStepButton.disabled = stepIndex === 0;
     nextStepButton.disabled = stepIndex === tutorialSteps.length - 1;
+    nextStepLabel.classList.toggle("is-visible", stepIndex === 0);
 
     const requestedImage = stepImages[stepIndex];
     const requestId = ++imageRequest;
@@ -98,6 +100,29 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   nextStepButton.addEventListener("click", () => {
     showStep(currentStep + 1);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.repeat ||
+      (event.target instanceof HTMLElement &&
+        (event.target.isContentEditable ||
+          /^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName)))
+    ) {
+      return;
+    }
+
+    if (event.key === "ArrowRight" && !nextStepButton.disabled) {
+      event.preventDefault();
+      showStep(currentStep + 1);
+    } else if (event.key === "ArrowLeft" && !previousStepButton.disabled) {
+      event.preventDefault();
+      showStep(currentStep - 1);
+    }
   });
 
   showStep(0);

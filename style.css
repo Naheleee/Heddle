@@ -70,6 +70,18 @@ html::-webkit-scrollbar-thumb {
     align-items: center;
     justify-content: center;
     gap: 3rem;
+    isolation: isolate;
+}
+
+.cursor-pixel-trail {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 10rem), transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 10rem), transparent 100%);
 }
 
 .section-scroll-cue {
@@ -129,14 +141,19 @@ html::-webkit-scrollbar-thumb {
 }
 
 .button1 {
+    display: inline-flex;
+    align-items: center;
+    height: 4rem;
+    padding: 13px;
     box-sizing: border-box;
     font-size: 1.2rem;
     color: grey;
     text-decoration: underline;
     cursor: pointer;
-    background-color: transparent;
+    background: radial-gradient(ellipse 100% 80%, white, transparent);
     outline: none;
     border: none;
+    border-radius: 6px;
     transition: transform .3s ease, color .3s ease;
 }
 
