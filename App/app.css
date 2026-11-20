@@ -655,6 +655,37 @@ input[type="number"]:focus-visible {
     -webkit-user-drag: none
 }
 
+#emptyCellHighlights {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none
+}
+
+#emptyCellHighlights.is-blinking {
+    animation: empty-cell-opacity-blink 2s ease-in-out infinite
+}
+
+@keyframes empty-cell-opacity-blink {
+    0% {
+        opacity: 0
+    }
+
+    50% {
+        opacity: 0.5
+    }
+
+    100% {
+        opacity: 0
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #emptyCellHighlights.is-blinking {
+        animation: none;
+        opacity: 1
+    }
+}
+
 .pattern-info {
     margin-right: 10px;
     display: flex;
@@ -1822,6 +1853,10 @@ input[type=range]::-moz-range-thumb {
     margin: 11px 0;
     font-size: 12px;
     line-height: normal
+}
+
+#tutorialIncompleteDialog .panel-description {
+    font-size: 12px
 }
 
 .name-input {

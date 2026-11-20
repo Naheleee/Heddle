@@ -116,6 +116,8 @@
   });
   const canvas = $('patternCanvas'),
     ctx = canvas.getContext('2d'),
+    emptyCellHighlights = $('emptyCellHighlights'),
+    emptyCellHighlightsCtx = emptyCellHighlights.getContext('2d'),
     viewport = $('canvasViewport'),
     selectionOverlay = $('selectionOverlay'),
     selectionBounds = selectionOverlay.querySelector('.selection-bounds'),
@@ -154,6 +156,7 @@
     customLibraries: []
   };
   let pendingExportPattern = null;
+  let emptyCellBlinking = false;
   let editingRecentColors = false;
   let recentPickerDismissTimer;
   const grid = (w, h) => Array.from({
@@ -194,6 +197,24 @@
   function showDialog(dialog) {
     dialog.showModal();
     dialog.focus({ preventScroll: true });
+  }
+
+  const hasEmptyCells = () => state.cells.some(row => row.some(cell => cell === null));
+
+  function stopEmptyCellBlink() {
+    if (!emptyCellBlinking) return;
+    emptyCellBlinking = false;
+    emptyCellHighlights.classList.remove('is-blinking');
+    render();
+  }
+
+  function startEmptyCellBlink() {
+    stopEmptyCellBlink();
+    if (!hasEmptyCells()) return;
+
+    emptyCellBlinking = true;
+    emptyCellHighlights.classList.add('is-blinking');
+    render();
   }
 
   function persist() {
@@ -627,6 +648,7 @@
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
+    renderEmptyCellHighlights(W, H, dpr);
     ctx.fillStyle = '#ededed';
     ctx.fillRect(0, 0, W, ruler);
     ctx.fillRect(0, 0, ruler, H);
@@ -653,6 +675,65 @@
       ctx.fillText(String(y % state.h + 1), ruler / 2, ruler + (y + .5) * cellHeight, cellHeight * .8);
     }
     renderSelectionOverlay();
+  }
+
+  function renderEmptyCellHighlights(width, height, dpr) {
+    emptyCellHighlights.width = canvas.width;
+    emptyCellHighlights.height = canvas.height;
+    emptyCellHighlights.style.width = width + 'px';
+    emptyCellHighlights.style.height = height + 'px';
+    emptyCellHighlights.style.left = canvas.offsetLeft + 'px';
+    emptyCellHighlights.style.top = canvas.offsetTop + 'px';
+    emptyCellHighlightsCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    emptyCellHighlightsCtx.clearRect(0, 0, width, height);
+
+    if (!emptyCellBlinking) return;
+    if (!hasEmptyCells()) {
+      emptyCellBlinking = false;
+      emptyCellHighlights.classList.remove('is-blinking');
+      return;
+    }
+
+    emptyCellHighlightsCtx.fillStyle = '#ff0000';
+    for (let tileY = 0; tileY < state.ry; tileY++) {
+      for (let tileX = 0; tileX < state.rx; tileX++) {
+        for (let y = 0; y < state.h; y++) {
+          for (let x = 0; x < state.w; x++) {
+            if (state.cells[y][x] !== null) continue;
+            const left = state.ruler + tileX * state.tileWidth + x * state.cellWidth,
+              top = state.ruler + tileY * state.tileHeight + y * state.cellHeight;
+            emptyCellHighlightsCtx.fillRect(left, top, state.cellWidth, state.cellHeight);
+          }
+        }
+      }
+    }
+
+    if (state.grid) {
+      emptyCellHighlightsCtx.strokeStyle = gridColors.line;
+      emptyCellHighlightsCtx.lineWidth = gridColors.lineWidth;
+      for (let tileY = 0; tileY < state.ry; tileY++) {
+        for (let tileX = 0; tileX < state.rx; tileX++) {
+          for (let y = 0; y < state.h; y++) {
+            for (let x = 0; x < state.w; x++) {
+              if (state.cells[y][x] !== null) continue;
+              const left = state.ruler + tileX * state.tileWidth + x * state.cellWidth,
+                top = state.ruler + tileY * state.tileHeight + y * state.cellHeight;
+              emptyCellHighlightsCtx.strokeRect(left + .15, top + .15, state.cellWidth - .3, state.cellHeight - .3);
+            }
+          }
+        }
+      }
+    }
+
+    emptyCellHighlightsCtx.strokeStyle = '#777777';
+    emptyCellHighlightsCtx.lineWidth = 1.5;
+    for (let tileY = 0; tileY < state.ry; tileY++) {
+      for (let tileX = 0; tileX < state.rx; tileX++) {
+        const left = state.ruler + tileX * state.tileWidth,
+          top = state.ruler + tileY * state.tileHeight;
+        emptyCellHighlightsCtx.strokeRect(left, top, state.tileWidth, state.tileHeight);
+      }
+    }
   }
 
   function renderSelectionOverlay() {
@@ -762,6 +843,63 @@
         for (let tx = 0; tx < state.rx; tx++) drawCell(x, y, tx, ty);
     }
     drawGuides();
+    updateDirtyEmptyCellHighlights(changed);
+  }
+
+  function updateDirtyEmptyCellHighlights(changed) {
+    if (!emptyCellBlinking) return;
+    if (!hasEmptyCells()) {
+      stopEmptyCellBlink();
+      return;
+    }
+
+    const guideCells = new Set(),
+      tileBorders = new Set();
+    emptyCellHighlightsCtx.fillStyle = '#ff0000';
+
+    for (const key of changed) {
+      const [x, y] = key.split(',').map(Number);
+      for (let tileY = 0; tileY < state.ry; tileY++) {
+        for (let tileX = 0; tileX < state.rx; tileX++) {
+          const left = state.ruler + tileX * state.tileWidth + x * state.cellWidth,
+            top = state.ruler + tileY * state.tileHeight + y * state.cellHeight;
+          emptyCellHighlightsCtx.clearRect(left, top, state.cellWidth, state.cellHeight);
+          if (state.cells[y][x] === null) {
+            emptyCellHighlightsCtx.fillRect(left, top, state.cellWidth, state.cellHeight);
+          }
+
+          tileBorders.add(`${tileX},${tileY}`);
+          for (const [dx, dy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            const guideX = x + dx,
+              guideY = y + dy;
+            if (guideX >= 0 && guideX < state.w && guideY >= 0 && guideY < state.h) {
+              guideCells.add(`${tileX},${tileY},${guideX},${guideY}`);
+            }
+          }
+        }
+      }
+    }
+
+    if (state.grid) {
+      emptyCellHighlightsCtx.strokeStyle = gridColors.line;
+      emptyCellHighlightsCtx.lineWidth = gridColors.lineWidth;
+      for (const key of guideCells) {
+        const [tileX, tileY, x, y] = key.split(',').map(Number);
+        if (state.cells[y][x] !== null) continue;
+        const left = state.ruler + tileX * state.tileWidth + x * state.cellWidth,
+          top = state.ruler + tileY * state.tileHeight + y * state.cellHeight;
+        emptyCellHighlightsCtx.strokeRect(left + .15, top + .15, state.cellWidth - .3, state.cellHeight - .3);
+      }
+    }
+
+    emptyCellHighlightsCtx.strokeStyle = '#777777';
+    emptyCellHighlightsCtx.lineWidth = 1.5;
+    for (const key of tileBorders) {
+      const [tileX, tileY] = key.split(',').map(Number),
+        left = state.ruler + tileX * state.tileWidth,
+        top = state.ruler + tileY * state.tileHeight;
+      emptyCellHighlightsCtx.strokeRect(left, top, state.tileWidth, state.tileHeight);
+    }
   }
 
   function cellAt(e) {
@@ -1846,6 +1984,28 @@
   });
   $('gridSettingsDialog').addEventListener('close', () => $('gridSettingsButton').setAttribute('aria-expanded', 'false'));
   document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => b.closest('dialog').close());
+  const tutorialIncompleteDialog = $('tutorialIncompleteDialog');
+  tutorialIncompleteDialog.addEventListener('close', startEmptyCellBlink);
+  $('tutorial-button').addEventListener('click', event => {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    if (!hasEmptyCells()) {
+      stopEmptyCellBlink();
+      return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    showDialog(tutorialIncompleteDialog);
+  });
   $('export-button').onclick = () => {
     pendingExportPattern = null;
     showDialog($('exportDialog'));

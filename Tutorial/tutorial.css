@@ -171,10 +171,6 @@ main {
   pointer-events: none;
 }
 
-.skip-button:hover .tutorial-footer__icon {
-  filter: none;
-}
-
 .skip-button:hover {
   scale: 1.02;
   color: #171717;
@@ -192,11 +188,6 @@ main {
   height: 16px;
   flex: none;
   object-fit: contain;
-}
-
-.skip-button .tutorial-footer__icon {
-  filter: invert(65%);
-  transition: filter .2s ease;
 }
 
 .section-header {
